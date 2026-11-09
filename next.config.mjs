@@ -20,6 +20,10 @@ const nextConfig = {
         source: '/share/:path*',
         destination: '/api/share/:path*',
       },
+      {
+        source: '/uploads/:path*',
+        destination: '/api/uploads/:path*',
+      },
     ];
   },
 };

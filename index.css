@@ -1,4 +1,48 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&family=Newsreader:ital,opsz,wght@1,6..72,400;1,6..72,500;1,6..72,600&family=Space+Grotesk:wght@500;600;700;800&display=swap');
+@import "tailwindcss";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  --color-primary: #ff8c5a;
+  --color-primary-hover: #ffa880;
+  --color-primary-dark: #d8683e;
+  --color-primary-light: #ffb292;
+  --color-primary-glow: rgba(255, 140, 90, 0.45);
+  --color-primary-dim: rgba(255, 140, 90, 0.18);
+
+  --color-obsidian: #0b0f14;
+  --color-obsidian-secondary: #0e1319;
+  --color-obsidian-card: #141a23;
+
+  --color-dark: #0b0f14;
+  --color-dark-paper: #0e1319;
+  --color-dark-card: rgba(20, 26, 35, 0.65);
+
+  --color-cyber-violet: #a855f7;
+  --color-cyber-purple: #7e22ce;
+  --color-cyber-green: #34d399;
+  --color-cyber-red: #f87171;
+  --color-cyber-blue: #60a5fa;
+  --color-cyber-amber: #fbbf24;
+
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-display: 'Space Grotesk', sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+  --font-serif: 'Newsreader', Georgia, serif;
+
+  --animate-float: float 6s ease-in-out infinite;
+  --animate-pulse-slow: pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  --animate-glow: glow 3s ease-in-out infinite alternate;
+
+  @keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-12px); }
+  }
+  @keyframes glow {
+    0% { opacity: 0.4; }
+    100% { opacity: 0.9; }
+  }
+}
 
 /* ================= THEME TOKENS ================= */
 :root {

@@ -32,13 +32,16 @@ Link.displayName = 'Link';
 export const useLocation = () => {
   const pathname = usePathname() || '/';
 
-  return {
-    pathname,
-    search: typeof window !== 'undefined' ? window.location.search : '',
-    hash: typeof window !== 'undefined' ? window.location.hash : '',
-    state: null,
-    key: 'default',
-  };
+  return React.useMemo(
+    () => ({
+      pathname,
+      search: typeof window !== 'undefined' ? window.location.search : '',
+      hash: typeof window !== 'undefined' ? window.location.hash : '',
+      state: null,
+      key: pathname,
+    }),
+    [pathname]
+  );
 };
 
 export const useNavigate = () => {
