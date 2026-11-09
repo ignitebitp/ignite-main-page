@@ -24,16 +24,28 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&family=Newsreader:ital,opsz,wght@1,6..72,400;1,6..72,500;1,6..72,600&family=Space+Grotesk:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
       body {
         font-family: 'Inter', sans-serif;
-        background-color: #0a0a0a;
-        color: #ffffff;
+        background-color: #0b0f14;
+        color: #f3f4f6;
         overflow-x: hidden;
+        transition: background-color 0.3s ease, color 0.3s ease;
+      }
+      html.light body {
+        background-color: #f8f9fa;
+        color: #0f1419;
       }
       h1, h2, h3, h4, h5, h6 {
         font-family: 'Space Grotesk', sans-serif;
+      }
+      .font-mono-code {
+        font-family: 'JetBrains Mono', monospace;
+      }
+      .font-editorial {
+        font-family: 'Newsreader', Georgia, serif;
+        font-style: italic;
       }
       /* Hide scrollbar for Chrome, Safari and Opera */
       ::-webkit-scrollbar {
@@ -44,26 +56,6 @@
         -ms-overflow-style: none;  /* IE and Edge */
         scrollbar-width: none;  /* Firefox */
       }
-      .cursor-dot,
-      .cursor-outline {
-        position: fixed;
-        top: 0;
-        left: 0;
-        transform: translate(-50%, -50%);
-        border-radius: 50%;
-        z-index: 9999;
-        pointer-events: none;
-      }
-      .cursor-dot {
-        width: 8px;
-        height: 8px;
-        background-color: #f97316;
-      }
-      .cursor-outline {
-        width: 40px;
-        height: 40px;
-        border: 1px solid rgba(249, 115, 22, 0.5);
-      }
     </style>
     <script>
       tailwind.config = {
@@ -72,33 +64,51 @@
           extend: {
             colors: {
               primary: {
-                DEFAULT: '#f97316', // Orange-500
-                dark: '#ea580c',    // Orange-600
-                light: '#fb923c',   // Orange-400
-                glow: 'rgba(249, 115, 22, 0.5)'
+                DEFAULT: '#ff8c5a', // Warm cyber neon rust orange
+                hover: '#ffa880',
+                dark: '#d8683e',
+                light: '#ffb292',
+                glow: 'rgba(255, 140, 90, 0.45)',
+                dim: 'rgba(255, 140, 90, 0.18)'
+              },
+              obsidian: {
+                DEFAULT: '#0b0f14',
+                secondary: '#0e1319',
+                card: '#141a23'
               },
               dark: {
-                DEFAULT: '#0a0a0a',
-                paper: '#111111',
-                card: 'rgba(17, 17, 17, 0.7)'
+                DEFAULT: '#0b0f14',
+                paper: '#0e1319',
+                card: 'rgba(20, 26, 35, 0.65)'
               },
-              accent: {
-                cyan: '#06b6d4',
-                purple: '#8b5cf6'
+              cyber: {
+                violet: '#a855f7',
+                purple: '#7e22ce',
+                green: '#34d399',
+                red: '#f87171',
+                blue: '#60a5fa',
+                amber: '#fbbf24'
               }
             },
             fontFamily: {
               sans: ['Inter', 'sans-serif'],
               display: ['Space Grotesk', 'sans-serif'],
+              mono: ['JetBrains Mono', 'monospace'],
+              serif: ['Newsreader', 'Georgia', 'serif'],
             },
             animation: {
               'float': 'float 6s ease-in-out infinite',
               'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+              'glow': 'glow 3s ease-in-out infinite alternate',
             },
             keyframes: {
               float: {
                 '0%, 100%': { transform: 'translateY(0)' },
-                '50%': { transform: 'translateY(-20px)' },
+                '50%': { transform: 'translateY(-12px)' },
+              },
+              glow: {
+                '0%': { opacity: '0.4' },
+                '100%': { opacity: '0.9' },
               }
             }
           }

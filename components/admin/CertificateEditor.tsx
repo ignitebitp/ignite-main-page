@@ -209,7 +209,7 @@ export function CertificateEditor({ show, eventId, eventName, initialCoords, onC
                         </div>
                         <div className="flex items-center gap-3">
                             <button
-                                onClick={saveCoords}
+                                onClick={() => saveCoords()}
                                 className="px-4 py-2 border border-white/10 rounded-lg hover:bg-white/5 transition-colors text-[10px] font-bold text-white uppercase"
                             >
                                 Save Changes

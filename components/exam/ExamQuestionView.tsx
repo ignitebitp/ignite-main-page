@@ -31,7 +31,7 @@ interface ExamQuestionViewProps {
 export const ExamQuestionView: React.FC<ExamQuestionViewProps> = ({
     currentQ, totalQ, question, answers, setAnswer, timeLeft,
     violations, maxViolations, onNext, onPrev, onSubmit, loading,
-    allQuestions, jumpToQuestion, adminWarnings = [], clearWarning
+    allQuestions, jumpToQuestion, adminWarnings = [] as { id: number; msg: string }[], clearWarning
 }) => {
     const formatTime = (s: number) => `${Math.floor(s / 60).toString().padStart(2, '0')}:${(s % 60).toString().padStart(2, '0')}`;
 

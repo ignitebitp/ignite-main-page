@@ -148,8 +148,8 @@ export function ExamPanel() {
 
                 const dataRows = rows.slice(1); // Skip header
 
-                const parseCSVRow = (row: string) => {
-                    const result = [];
+                const parseCSVRow = (row: string): string[] => {
+                    const result: string[] = [];
                     let current = '';
                     let inQuotes = false;
                     for (let i = 0; i < row.length; i++) {

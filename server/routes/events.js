@@ -241,7 +241,7 @@ router.get('/:id/certificate-preview', auth, async (req, res) => {
 
         let pdfDoc;
         if (event.certificateTemplate) {
-            const templatePath = path.join(process.cwd(), event.certificateTemplate.startsWith('/') ? event.certificateTemplate.slice(1) : event.certificateTemplate);
+            const templatePath = path.join(/*turbopackIgnore: true*/ process.cwd(), event.certificateTemplate.startsWith('/') ? event.certificateTemplate.slice(1) : event.certificateTemplate);
             const templateBytes = fs.readFileSync(templatePath);
             pdfDoc = await PDFDocument.load(templateBytes);
         } else {
@@ -307,7 +307,7 @@ router.post('/:id/generate-certificates', auth, async (req, res) => {
 
         const registrations = await EventRegistration.find({ eventId: event._id, attended: true });
         if (registrations.length === 0) return res.status(400).json({ error: 'No participants have marked attendance for this event yet.' });
-        const templatePath = path.join(process.cwd(), event.certificateTemplate.slice(1));
+        const templatePath = path.join(/*turbopackIgnore: true*/ process.cwd(), event.certificateTemplate.slice(1));
         const templateBytes = fs.readFileSync(templatePath);
 
         const fontMap = {

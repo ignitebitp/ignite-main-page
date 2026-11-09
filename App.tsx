@@ -10,22 +10,22 @@ import Cursor from './components/Cursor';
 import AnimatedBackground from './components/AnimatedBackground';
 
 // Pages
-import Home from './pages/Home';
-import Team from './pages/Team';
-import Alumni from './pages/Alumni';
-import Events from './pages/Events';
-import Gallery from './pages/Gallery';
-import Contact from './pages/Contact';
-import Developers from './pages/Developers';
-import Recruit from './pages/Recruit';
-import Inginiux from './pages/Inginiux';
-import Exam from './pages/Exam';
-import Admin from './pages/Admin';
-import MegaEvent from './pages/MegaEvent';
-import Profile from './pages/Profile';
-import Attend from './pages/Attend';
-import Register from './pages/Register';
-import Login from './pages/Login';
+import Home from './views/Home';
+import Team from './views/Team';
+import Alumni from './views/Alumni';
+import Events from './views/Events';
+import Gallery from './views/Gallery';
+import Contact from './views/Contact';
+import Developers from './views/Developers';
+import Recruit from './views/Recruit';
+import Inginiux from './views/Inginiux';
+import Exam from './views/Exam';
+import Admin from './views/Admin';
+import MegaEvent from './views/MegaEvent';
+import Profile from './views/Profile';
+import Attend from './views/Attend';
+import Register from './views/Register';
+import Login from './views/Login';
 
 // Scroll to top component
 const ScrollToTop = () => {

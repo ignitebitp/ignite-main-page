@@ -1,5 +1,11 @@
-export const API_URL = (import.meta as any).env?.VITE_API_URL ||
-    ((import.meta as any).env?.DEV ? 'http://localhost:5000' : 'https://ignite-technical-innovation-club.onrender.com');
+const getApiUrl = () => {
+  if (typeof process !== 'undefined' && process.env?.NEXT_PUBLIC_API_URL) {
+    return process.env.NEXT_PUBLIC_API_URL;
+  }
+  return '';
+};
+
+export const API_URL = getApiUrl();
 
 export const api = {
     // Generic fetch wrapper
