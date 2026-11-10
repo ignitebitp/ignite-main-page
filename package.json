@@ -1,17 +1,40 @@
 {
-  "name": "ignite---technical-innovation-club",
+  "name": "ignite-workspace",
+  "version": "1.0.0",
   "private": true,
-  "version": "0.0.0",
   "type": "module",
+  "workspaces": [
+    "frontend",
+    "backend"
+  ],
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start",
-    "server": "node server/index.js",
-    "vite:dev": "vite",
-    "vite:build": "vite build"
+    "dev": "npm --prefix frontend run dev",
+    "build": "npm --prefix frontend run build",
+    "start": "npm --prefix frontend run start",
+    "server": "npm --prefix backend run start",
+    "server:dev": "npm --prefix backend run dev",
+    "backend": "npm --prefix backend run start",
+    "backend:dev": "npm --prefix backend run dev",
+    "prisma:generate": "npm --prefix backend run prisma:generate",
+    "prisma:push": "npm --prefix backend run prisma:push",
+    "prisma:migrate": "npm --prefix backend run prisma:migrate",
+    "prisma:studio": "npm --prefix backend run prisma:studio"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4.3.5",
+    "@types/node": "^22.14.0",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "@vitejs/plugin-react": "^5.0.0",
+    "autoprefixer": "^10.4.24",
+    "postcss": "^8.5.6",
+    "prisma": "^6.4.0",
+    "tailwindcss": "^4.1.18",
+    "typescript": "~5.8.2",
+    "vite": "^6.2.0"
   },
   "dependencies": {
+    "@prisma/client": "^6.4.0",
     "@vercel/analytics": "^1.6.1",
     "bcryptjs": "^3.0.3",
     "cors": "^2.8.6",
@@ -30,23 +53,7 @@
     "qrcode": "^1.5.4",
     "react": "^19.2.3",
     "react-dom": "^19.2.3",
-    "react-router-dom": "^7.11.0"
-  },
-  "devDependencies": {
-    "@tailwindcss/postcss": "^4.3.5",
-    "@types/node": "^22.14.0",
-    "@types/react": "^19.3.0",
-    "@types/react-dom": "^19.3.0",
-    "@vitejs/plugin-react": "^5.0.0",
-    "autoprefixer": "^10.4.24",
-    "postcss": "^8.5.6",
-    "sharp": "^0.35.5",
-    "tailwindcss": "^4.1.18",
-    "typescript": "~5.8.2",
-    "vite": "^6.2.0"
-  },
-  "allowScripts": {
-    "esbuild@0.25.12": true,
-    "sharp@0.34.5": true
+    "react-router-dom": "^7.11.0",
+    "sharp": "^0.35.5"
   }
 }

@@ -1,0 +1,193 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ================= USER & AUTHENTICATION =================
+model User {
+  id                   String    @id @default(cuid())
+  name                 String
+  email                String    @unique
+  password             String
+  phone                String?
+  college              String?
+  branch               String?
+  batch                String?
+  isVerified           Boolean   @default(false)
+  verificationCode     String?
+  resetPasswordToken   String?
+  resetPasswordExpires DateTime?
+  lastLogin            DateTime?
+  createdAt            DateTime  @default(now())
+  updatedAt            DateTime  @updatedAt
+
+  @@map("users")
+}
+
+// ================= EVENTS & REGISTRATIONS =================
+model Event {
+  id                  String              @id @default(cuid())
+  name                String
+  description         String?
+  date                DateTime?
+  venue               String?
+  type                String              @default("standalone") // 'standalone' | 'mega'
+  isTeamEvent         Boolean             @default(false)
+  maxTeamSize         Int                 @default(1)
+  isActive            Boolean             @default(true)
+  category            String              @default("Inginiux 2.0")
+  parentId            String?
+  parent              Event?              @relation("SubEvents", fields: [parentId], references: [id], onDelete: Cascade)
+  subEvents           Event[]             @relation("SubEvents")
+  image               String?
+  registrationsOpen   Boolean             @default(true)
+  status              String              @default("upcoming") // 'upcoming' | 'live' | 'ended'
+  isFeatured          Boolean             @default(false)
+  reminderSent        Boolean             @default(false)
+  certificateTemplate String?
+  certificateCoords   Json?
+  registrations       EventRegistration[]
+  createdAt           DateTime            @default(now())
+  updatedAt           DateTime            @updatedAt
+
+  @@map("events")
+}
+
+model EventRegistration {
+  id          String   @id @default(cuid())
+  eventId     String
+  event       Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  name        String
+  email       String
+  phone       String
+  rollNo      String
+  branch      String?
+  teamName    String?
+  teamMembers Json? // Array of { name, rollNo, email }
+  attended    Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@unique([eventId, email])
+  @@map("event_registrations")
+}
+
+// ================= EXAM SYSTEM =================
+model ExamAllowlist {
+  id          String   @id @default(cuid())
+  email       String   @unique
+  name        String
+  rollNo      String
+  canTakeExam Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("exam_allowlists")
+}
+
+model ExamQuestion {
+  id            String   @id @default(cuid())
+  question      String
+  options       String[]
+  correctAnswer Json // Number index or String answer
+  difficulty    String   @default("medium") // 'easy' | 'medium' | 'hard'
+  category      String   @default("aptitude")
+  isActive      Boolean  @default(true)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@map("exam_questions")
+}
+
+model ExamSubmission {
+  id               String    @id @default(cuid())
+  name             String
+  email            String
+  rollNo           String    @unique
+  answers          Json // Array of { questionId, selectedAnswer }
+  questionSnapshot Json // Snapshot of questions provided to candidate
+  adminWarnings    Json? // Array of { message, timestamp }
+  score            Float     @default(0)
+  totalQuestions   Int       @default(0)
+  startedAt        DateTime
+  submittedAt      DateTime?
+  violations       Int       @default(0)
+  violationLog     Json? // Array of { type, timestamp }
+  extraMinutes     Int       @default(0)
+  status           String    @default("in-progress") // 'in-progress' | 'submitted' | 'auto-submitted'
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+
+  @@map("exam_submissions")
+}
+
+// ================= GALLERY =================
+model Gallery {
+  id        String   @id @default(cuid())
+  title     String
+  image     String?
+  images    String[]
+  coverUrl  String?
+  link      String?
+  category  String   @default("General")
+  date      DateTime @default(now())
+  order     Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("galleries")
+}
+
+// ================= RECRUITMENT =================
+model Recruitment {
+  id          String   @id @default(cuid())
+  name        String
+  email       String   @unique
+  phone       String
+  rollNo      String   @unique
+  branch      String
+  batch       String   @default("2025")
+  interests   String[]
+  esportsGame String?
+  resume      String?
+  whyJoin     String
+  status      String   @default("pending") // 'pending' | 'shortlisted' | 'rejected' | 'accepted'
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("recruitments")
+}
+
+// ================= SYSTEM CONFIGURATION =================
+model SystemConfig {
+  id          String   @id @default(cuid())
+  key         String   @unique
+  value       Json
+  lastUpdated DateTime @default(now())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("system_configs")
+}
+
+// ================= TEAM MEMBERS =================
+model TeamMember {
+  id        String   @id @default(cuid())
+  name      String
+  role      String
+  image     String?
+  socials   Json? // { linkedin, github, twitter, instagram }
+  order     Int      @default(0)
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("team_members")
+}

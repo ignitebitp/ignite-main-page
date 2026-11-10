@@ -1,11 +1,10 @@
 @echo off
-echo Starting Ignite App...
+echo Starting Ignite App (Frontend + Backend)...
+
+:: Start Backend
+start "Ignite Backend" cmd /k "cd backend && npm run dev"
 
 :: Start Frontend
-start "Ignite Client" cmd /k "npm run dev"
-
-:: Start Server
-cd server
-start "Ignite Server" cmd /k "npm run dev"
+start "Ignite Frontend" cmd /k "cd frontend && npm run dev"
 
 echo Both services started!
