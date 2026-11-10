@@ -15,13 +15,13 @@ export const metadata: Metadata = {
     url: 'https://ignite-technical-innovation-club.vercel.app/',
     title: 'IGNITE - Technical Innovation Club',
     description: 'Empowering students through technology, innovation, and collaboration.',
-    images: ['/igu.jpeg'],
+    images: ['/igu.webp'],
   },
   twitter: {
     card: 'summary_large_image',
     title: 'IGNITE - Technical Innovation Club',
     description: 'Empowering students through technology, innovation, and collaboration.',
-    images: ['/igu.jpeg'],
+    images: ['/igu.webp'],
   },
 };
 

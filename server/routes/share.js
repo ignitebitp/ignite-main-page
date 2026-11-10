@@ -16,7 +16,7 @@ router.get('/events/:id', async (req, res) => {
         const host = req.get('host');
         const baseUrl = `${protocol}://${host}`;
         
-        const imageUrl = event.image ? (event.image.startsWith('http') ? event.image : `${baseUrl}${event.image}`) : `${baseUrl}/uploads/placeholder.jpg`; // Fallback if needed
+        const imageUrl = event.image ? (event.image.startsWith('http') ? event.image : `${baseUrl}${event.image}`) : `${baseUrl}/placeholder.svg`; // Fallback if needed
         const eventUrl = `${(process.env.FRONTEND_URL || 'https://ignite-technical-innovation-club.vercel.app')}/events`; 
         // Ideally redirect to specific event anchor or page. For now, /events page.
 

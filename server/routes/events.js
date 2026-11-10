@@ -19,12 +19,12 @@ const saveImage = async (buffer) => {
     const dir = 'uploads/events/';
     if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
     
-    const filename = `${Date.now()}.jpeg`;
+    const filename = `${Date.now()}.webp`;
     const filepath = path.join(dir, filename);
     
     await sharp(buffer)
         .resize(800, 600, { fit: 'inside', withoutEnlargement: true }) // Resize to reasonable max dimensions
-        .jpeg({ quality: 80 }) // Compress to JPEG with 80% quality
+        .webp({ quality: 85 }) // Compress to WebP with 85% quality
         .toFile(filepath);
         
     return `/${dir}${filename}`;

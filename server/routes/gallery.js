@@ -23,12 +23,12 @@ const upload = multer({ storage });
 const saveImage = async (buffer) => {
     if (!fs.existsSync(UPLOADS_PATH)) fs.mkdirSync(UPLOADS_PATH, { recursive: true });
     
-    const filename = `${Date.now()}-${Math.round(Math.random() * 1E9)}.jpeg`;
+    const filename = `${Date.now()}-${Math.round(Math.random() * 1E9)}.webp`;
     const filepath = path.join(UPLOADS_PATH, filename);
     
     await sharp(buffer)
         .resize(1200, 900, { fit: 'inside', withoutEnlargement: true })
-        .jpeg({ quality: 80 })
+        .webp({ quality: 85 })
         .toFile(filepath);
         
     return `/uploads/gallery/${filename}`;

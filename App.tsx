@@ -10,22 +10,22 @@ import Cursor from './components/Cursor';
 import AnimatedBackground from './components/AnimatedBackground';
 
 // Pages
-import Home from './views/Home';
-import Team from './views/Team';
-import Alumni from './views/Alumni';
-import Events from './views/Events';
-import Gallery from './views/Gallery';
-import Contact from './views/Contact';
-import Developers from './views/Developers';
-import Recruit from './views/Recruit';
-import Inginiux from './views/Inginiux';
-import Exam from './views/Exam';
-import Admin from './views/Admin';
-import MegaEvent from './views/MegaEvent';
-import Profile from './views/Profile';
-import Attend from './views/Attend';
-import Register from './views/Register';
-import Login from './views/Login';
+import Home from './app/page';
+import Team from './app/team/page';
+import Alumni from './app/alumni/page';
+import Events from './app/events/page';
+import Gallery from './app/gallery/page';
+import Contact from './app/contact/page';
+import Developers from './app/developers/page';
+import Recruit from './app/recruit/page';
+import Inginiux from './app/inginiux/page';
+import Exam from './app/exam/page';
+import Admin from './app/admin/page';
+import MegaEvent from './app/[slug]/page';
+import Profile from './app/profile/page';
+import Attend from './app/attend/page';
+import Register from './app/register/page';
+import Login from './app/login/page';
 
 // Scroll to top component
 const ScrollToTop = () => {
@@ -44,6 +44,7 @@ const AnimatedRoutes: React.FC = () => {
       <Routes location={location}>
         <Route path="/" element={<Home />} />
         <Route path="/team" element={<Team />} />
+        <Route path="/about" element={<Team />} />
         <Route path="/alumni" element={<Alumni />} />
         <Route path="/events" element={<Events />} />
         <Route path="/gallery" element={<Gallery />} />
