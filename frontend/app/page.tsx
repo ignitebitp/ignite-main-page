@@ -34,12 +34,12 @@ const Home: React.FC = () => {
                 </span>
               </motion.div>
 
-              {/* Headline with Space Grotesk & Editorial Serif Italic Accent */}
+              {/* Headline with Fluid Clamp, Space Grotesk & Editorial Serif Italic Accent */}
               <motion.h1
-                initial={{ opacity: 0, y: 25 }}
+                initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.7, delay: 0.1 }}
-                className="text-5xl sm:text-6xl md:text-7xl lg:text-[5.5rem] font-display font-extrabold leading-[1.02] tracking-tight text-white"
+                transition={{ duration: 0.5, delay: 0.08, ease: [0.16, 1, 0.3, 1] }}
+                className="text-[clamp(2.75rem,6vw,5.5rem)] font-display font-extrabold leading-[1.02] tracking-tight text-white"
               >
                 IGNITE THE <br />
                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary via-orange-400 to-amber-300">
@@ -52,36 +52,36 @@ const Home: React.FC = () => {
 
               {/* Subtitle / Description */}
               <motion.p
-                initial={{ opacity: 0, y: 20 }}
+                initial={{ opacity: 0, y: 16 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.7, delay: 0.2 }}
+                transition={{ duration: 0.5, delay: 0.14, ease: [0.16, 1, 0.3, 1] }}
                 className="text-base sm:text-lg md:text-xl text-gray-400 max-w-xl leading-relaxed"
               >
                 The premier Tech Society of <span className="text-white font-medium">BIT Mesra</span> — fostering innovation, coding excellence,
                 and technical leadership for the next generation of builders and security practitioners.
               </motion.p>
 
-              {/* Action Buttons Row */}
+              {/* Action Buttons Row (Prominent Landing Page CTA) */}
               <motion.div
-                initial={{ opacity: 0, y: 20 }}
+                initial={{ opacity: 0, y: 16 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.7, delay: 0.3 }}
+                transition={{ duration: 0.5, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
                 className="flex flex-wrap items-center gap-4 pt-2"
               >
                 <Link
                   to="/register"
-                  className="btn-cyber-primary px-7 py-3.5 rounded-full flex items-center gap-2 text-sm md:text-base font-bold shadow-lg"
+                  className="btn-cyber-primary px-8 py-4 rounded-full flex items-center gap-2.5 text-base md:text-lg font-bold shadow-lg"
                 >
                   <span>Join the Community</span>
-                  <ArrowUpRight className="w-4 h-4 stroke-[2.5]" />
+                  <ArrowUpRight className="w-5 h-5 stroke-[2.5]" />
                 </Link>
 
                 <Link
                   to="/events"
-                  className="btn-cyber-secondary px-7 py-3.5 rounded-full flex items-center gap-2 text-sm md:text-base font-medium"
+                  className="btn-cyber-secondary px-7 py-4 rounded-full flex items-center gap-2 text-sm md:text-base font-medium"
                 >
                   <Sparkles className="w-4 h-4 text-primary" />
-                  <span>▷ Explore Events</span>
+                  <span>Explore Events</span>
                 </Link>
               </motion.div>
 
@@ -143,7 +143,7 @@ const Home: React.FC = () => {
               { label: 'Events Hosted', value: '50+', tag: 'HACKATHONS & LABS', icon: Code, color: 'text-cyber-green' },
               { label: 'Years of Excellence', value: '4+', tag: 'CAMPUS GUILD', icon: Rocket, color: 'text-purple-400' },
             ].map((stat, index) => (
-              <SectionWrapper key={index} delay={index * 0.1}>
+              <SectionWrapper key={index} delay={index * 0.03}>
                 <div className="glass-card p-6 rounded-2xl relative group overflow-hidden border-t-[1.5px] border-t-white/30">
                   <div className="flex items-center justify-between mb-4">
                     <div className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center group-hover:scale-110 transition-transform">
@@ -154,7 +154,7 @@ const Home: React.FC = () => {
                     </span>
                   </div>
 
-                  <h3 className="text-4xl md:text-5xl font-mono-code font-bold text-white mb-1 group-hover:text-primary transition-colors tracking-tight">
+                  <h3 className="text-4xl md:text-5xl font-mono-code font-bold tabular-nums text-white mb-1 group-hover:text-primary transition-colors tracking-tight">
                     {stat.value}
                   </h3>
                   <p className="text-gray-400 text-xs font-medium uppercase tracking-wider">

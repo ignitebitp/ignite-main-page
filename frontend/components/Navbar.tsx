@@ -101,11 +101,11 @@ const Navbar: React.FC = () => {
 
   return (
     <>
-      <header className="fixed top-0 left-0 right-0 z-50 flex justify-center pointer-events-none pt-3 md:pt-4 transition-all duration-300">
+      <header className="fixed top-0 left-0 right-0 z-50 flex justify-center pointer-events-none pt-[max(0.75rem,env(safe-area-inset-top))] md:pt-4 transition-all duration-300">
         <motion.div
-          initial={{ y: -60, opacity: 0 }}
+          initial={{ y: -40, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
-          transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+          transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
           className={`pointer-events-auto transition-all duration-300 w-[94%] max-w-6xl glass-island-nav rounded-full px-4 md:px-5 flex items-center justify-between ${
             scrolled ? 'py-2 shadow-2xl backdrop-blur-2xl' : 'py-3'
           }`}
@@ -158,7 +158,7 @@ const Navbar: React.FC = () => {
                     <motion.div
                       layoutId="activeNavPill"
                       className="absolute inset-0 bg-white/10 rounded-full border border-white/20 shadow-[0_2px_10px_rgba(0,0,0,0.4)] -z-10"
-                      transition={{ type: 'spring', stiffness: 450, damping: 35 }}
+                      transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
                     />
                   )}
 
@@ -167,7 +167,7 @@ const Navbar: React.FC = () => {
                     <motion.div
                       layoutId="hoverNavPill"
                       className="absolute inset-0 bg-white/5 rounded-full -z-10"
-                      transition={{ type: 'spring', stiffness: 500, damping: 35 }}
+                      transition={{ duration: 0.18, ease: [0.16, 1, 0.3, 1] }}
                     />
                   )}
                 </Link>
@@ -204,30 +204,28 @@ const Navbar: React.FC = () => {
               </Link>
             )}
 
-            {/* Dark / Light Mode Switch */}
+            {/* Dark / Light Mode Switch (44px touch hit slop) */}
             <button
               onClick={toggleTheme}
               aria-label="Toggle theme mode"
-              className="w-8 h-8 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 flex items-center justify-center text-gray-300 hover:text-primary transition-all duration-200"
+              className="relative w-9 h-9 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 flex items-center justify-center text-gray-300 hover:text-primary transition-all duration-200 before:content-[''] before:absolute before:-inset-1.5"
             >
               <AnimatePresence mode="wait" initial={false}>
                 {isDark ? (
                   <motion.div
                     key="sun"
-                    initial={{ rotate: -90, scale: 0 }}
-                    animate={{ rotate: 0, scale: 1 }}
-                    exit={{ rotate: 90, scale: 0 }}
-                    transition={{ duration: 0.2 }}
+                    initial={{ opacity: 0, scale: 0.8, filter: 'blur(4px)' }}
+                    animate={{ opacity: 1, scale: 1, filter: 'blur(0px)', transition: { duration: 0.2, ease: 'easeOut' } }}
+                    exit={{ opacity: 0, scale: 0.8, filter: 'blur(4px)', transition: { duration: 0.16, ease: 'easeIn' } }}
                   >
                     <Sun className="w-4 h-4 text-amber-400" />
                   </motion.div>
                 ) : (
                   <motion.div
                     key="moon"
-                    initial={{ rotate: 90, scale: 0 }}
-                    animate={{ rotate: 0, scale: 1 }}
-                    exit={{ rotate: -90, scale: 0 }}
-                    transition={{ duration: 0.2 }}
+                    initial={{ opacity: 0, scale: 0.8, filter: 'blur(4px)' }}
+                    animate={{ opacity: 1, scale: 1, filter: 'blur(0px)', transition: { duration: 0.2, ease: 'easeOut' } }}
+                    exit={{ opacity: 0, scale: 0.8, filter: 'blur(4px)', transition: { duration: 0.16, ease: 'easeIn' } }}
                   >
                     <Moon className="w-4 h-4 text-indigo-400" />
                   </motion.div>
@@ -235,9 +233,9 @@ const Navbar: React.FC = () => {
               </AnimatePresence>
             </button>
 
-            {/* Mobile Hamburger Trigger */}
+            {/* Mobile Hamburger Trigger (44px touch hit slop) */}
             <button
-              className="lg:hidden text-white p-1.5 rounded-lg hover:bg-white/10 transition-colors focus:outline-none"
+              className="lg:hidden relative text-white p-2.5 rounded-lg hover:bg-white/10 transition-colors focus:outline-none min-w-[44px] min-h-[44px] flex items-center justify-center"
               onClick={() => setIsOpen(!isOpen)}
               aria-label="Toggle mobile menu"
             >
@@ -251,11 +249,10 @@ const Navbar: React.FC = () => {
       <AnimatePresence>
         {isOpen && (
           <motion.div
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            transition={{ duration: 0.3, ease: 'easeOut' }}
-            className="lg:hidden fixed inset-0 z-40 bg-[#0b0f14]/98 backdrop-blur-2xl flex flex-col justify-between pt-24 pb-8 px-6 overflow-y-auto"
+            initial={{ opacity: 0, y: -16 }}
+            animate={{ opacity: 1, y: 0, transition: { duration: 0.24, ease: [0.16, 1, 0.3, 1] } }}
+            exit={{ opacity: 0, y: -12, transition: { duration: 0.18, ease: 'easeIn' } }}
+            className="lg:hidden fixed inset-0 z-40 bg-[#0b0f14]/98 backdrop-blur-2xl flex flex-col justify-between pt-24 pb-[max(2rem,env(safe-area-inset-bottom))] px-6 overflow-y-auto"
           >
             <div className="flex flex-col space-y-4">
               <span className="text-xs font-mono-code text-primary uppercase tracking-widest pl-2">
@@ -267,9 +264,9 @@ const Navbar: React.FC = () => {
                 return (
                   <motion.div
                     key={item.label}
-                    initial={{ opacity: 0, x: -16 }}
+                    initial={{ opacity: 0, x: -14 }}
                     animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: idx * 0.04 }}
+                    transition={{ delay: idx * 0.03, duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
                   >
                     <Link
                       to={item.path}

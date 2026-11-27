@@ -94,7 +94,7 @@ const Events: React.FC = () => {
           </div>
 
           <div className="absolute bottom-4 left-6 right-6">
-            <h3 className="text-2xl md:text-3xl font-display font-bold text-white tracking-tight">
+            <h3 className="text-2xl md:text-3xl font-display font-bold text-white tracking-tight line-clamp-2">
               {event.name}
             </h3>
           </div>
@@ -194,9 +194,21 @@ const Events: React.FC = () => {
         </SectionWrapper>
 
         {loading ? (
-          <div className="text-center font-mono-code text-sm text-gray-500 py-24 flex items-center justify-center gap-2">
-            <span className="w-2 h-2 rounded-full bg-primary animate-ping" />
-            <span>Fetching live event telemetry...</span>
+          <div className="space-y-8 max-w-5xl mx-auto" aria-busy="true" aria-label="Loading events">
+            {[0, 1].map(i => (
+              <div key={i} className="glass-card rounded-3xl overflow-hidden animate-pulse">
+                <div className="h-52 md:h-64 bg-white/5" />
+                <div className="p-6 md:p-8 space-y-4">
+                  <div className="flex gap-3">
+                    <div className="h-6 w-28 rounded-full bg-white/5" />
+                    <div className="h-6 w-32 rounded-full bg-white/5" />
+                  </div>
+                  <div className="h-4 w-3/4 rounded bg-white/5" />
+                  <div className="h-4 w-1/2 rounded bg-white/5" />
+                  <div className="h-12 w-full rounded-xl bg-white/5 mt-4" />
+                </div>
+              </div>
+            ))}
           </div>
         ) : (
           <div className="space-y-10 max-w-5xl mx-auto">
@@ -206,8 +218,19 @@ const Events: React.FC = () => {
               </SectionWrapper>
             ))}
             {rootEvents.length === 0 && (
-              <div className="text-center py-20 glass-card rounded-3xl border-t-[1.5px] border-t-white/30">
-                <p className="text-gray-400 font-mono-code text-sm">No scheduled events active at this moment.</p>
+              <div className="text-center py-20 px-6 glass-card rounded-3xl border-t-[1.5px] border-t-white/30 space-y-4">
+                <p className="text-gray-300 font-display text-xl font-bold">No scheduled events active right now</p>
+                <p className="text-gray-400 font-mono-code text-xs max-w-md mx-auto">
+                  Check back soon for upcoming hackathons and workshops, or explore past moments in our gallery.
+                </p>
+                <div className="pt-2">
+                  <a
+                    href="/gallery"
+                    className="btn-cyber-primary inline-flex items-center gap-2 px-6 py-3 rounded-full text-sm font-bold"
+                  >
+                    Explore Gallery
+                  </a>
+                </div>
               </div>
             )}
           </div>
@@ -219,19 +242,20 @@ const Events: React.FC = () => {
         {selectedEvent && (
           <motion.div
             initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
+            animate={{ opacity: 1, transition: { duration: 0.2, ease: 'easeOut' } }}
+            exit={{ opacity: 0, transition: { duration: 0.16, ease: 'easeIn' } }}
             className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md"
           >
             <motion.div
-              initial={{ scale: 0.92, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.92, opacity: 0 }}
+              initial={{ scale: 0.95, opacity: 0, y: 8 }}
+              animate={{ scale: 1, opacity: 1, y: 0, transition: { duration: 0.22, ease: [0.16, 1, 0.3, 1] } }}
+              exit={{ scale: 0.95, opacity: 0, y: 6, transition: { duration: 0.16, ease: 'easeIn' } }}
               className="glass-card bg-[#0e1319]/95 border-t-[1.5px] border-t-white/50 rounded-2xl p-6 md:p-8 max-w-md w-full relative shadow-2xl"
             >
               <button
                 onClick={() => setSelectedEvent(null)}
-                className="absolute top-4 right-4 text-gray-400 hover:text-white p-1 rounded-lg hover:bg-white/10"
+                aria-label="Close registration modal"
+                className="absolute top-3 right-3 text-gray-400 hover:text-white p-2.5 rounded-lg hover:bg-white/10 min-w-[44px] min-h-[44px] flex items-center justify-center"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -250,7 +274,7 @@ const Events: React.FC = () => {
 
               {regSuccess ? (
                 <div className="text-center py-8">
-                  <div className="w-16 h-16 bg-cyber-green/10 border border-cyber-green/30 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <div className="w-16 h-16 bg-cyber-green/10 border border-cyber-green/30 rounded-full flex items-center justify-center mx-auto mb-4 animate-success-pulse">
                     <ChevronRight className="w-8 h-8 text-cyber-green" />
                   </div>
                   <h4 className="text-xl font-display font-bold text-cyber-green mb-2">Registration Confirmed!</h4>
@@ -258,44 +282,60 @@ const Events: React.FC = () => {
                 </div>
               ) : (
                 <form onSubmit={handleRegister} className="space-y-4">
-                  <input
-                    value={regForm.name}
-                    onChange={e => setRegForm({ ...regForm, name: e.target.value })}
-                    placeholder="Full Name *"
-                    required
-                    className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:border-primary outline-none text-sm font-sans"
-                  />
-                  <input
-                    value={regForm.email}
-                    onChange={e => setRegForm({ ...regForm, email: e.target.value })}
-                    placeholder="Institutional Email *"
-                    type="email"
-                    required
-                    className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:border-primary outline-none text-sm font-sans"
-                  />
-                  <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-1.5">
+                    <label className="text-[11px] font-mono-code uppercase tracking-wider text-gray-400 px-1">Full name *</label>
                     <input
-                      value={regForm.rollNo}
-                      onChange={e => setRegForm({ ...regForm, rollNo: e.target.value })}
-                      placeholder="Roll No *"
-                      required
-                      className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:border-primary outline-none text-sm font-sans"
-                    />
-                    <input
-                      value={regForm.phone}
-                      onChange={e => setRegForm({ ...regForm, phone: e.target.value })}
-                      placeholder="Phone *"
+                      value={regForm.name}
+                      onChange={e => setRegForm({ ...regForm, name: e.target.value })}
+                      placeholder="Jane Doe"
                       required
                       className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:border-primary outline-none text-sm font-sans"
                     />
                   </div>
-                  {selectedEvent.isTeamEvent && (
+                  <div className="space-y-1.5">
+                    <label className="text-[11px] font-mono-code uppercase tracking-wider text-gray-400 px-1">Institutional email *</label>
                     <input
-                      value={regForm.teamName}
-                      onChange={e => setRegForm({ ...regForm, teamName: e.target.value })}
-                      placeholder="Team Name"
+                      value={regForm.email}
+                      onChange={e => setRegForm({ ...regForm, email: e.target.value })}
+                      placeholder="jane@bitmesra.ac.in"
+                      type="email"
+                      required
                       className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:border-primary outline-none text-sm font-sans"
                     />
+                  </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-1.5">
+                      <label className="text-[11px] font-mono-code uppercase tracking-wider text-gray-400 px-1">Roll no *</label>
+                      <input
+                        value={regForm.rollNo}
+                        onChange={e => setRegForm({ ...regForm, rollNo: e.target.value })}
+                        placeholder="BTECH/10001/23"
+                        required
+                        className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:border-primary outline-none text-sm font-sans"
+                      />
+                    </div>
+                    <div className="space-y-1.5">
+                      <label className="text-[11px] font-mono-code uppercase tracking-wider text-gray-400 px-1">Phone *</label>
+                      <input
+                        value={regForm.phone}
+                        onChange={e => setRegForm({ ...regForm, phone: e.target.value })}
+                        placeholder="+91 98765 43210"
+                        type="tel"
+                        required
+                        className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:border-primary outline-none text-sm font-sans"
+                      />
+                    </div>
+                  </div>
+                  {selectedEvent.isTeamEvent && (
+                    <div className="space-y-1.5">
+                      <label className="text-[11px] font-mono-code uppercase tracking-wider text-gray-400 px-1">Team name</label>
+                      <input
+                        value={regForm.teamName}
+                        onChange={e => setRegForm({ ...regForm, teamName: e.target.value })}
+                        placeholder="Team Ignite"
+                        className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:border-primary outline-none text-sm font-sans"
+                      />
+                    </div>
                   )}
 
                   {regError && <p className="text-cyber-red text-xs font-mono-code">{regError}</p>}

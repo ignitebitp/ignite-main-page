@@ -1,30 +1,72 @@
 import express from 'express';
-import mongoose from 'mongoose';
-import Recruitment from '../models/Recruitment.js';
+import prisma from '../prisma.js';
 import auth from '../middleware/auth.js';
 import { sendEmail } from '../lib/mailer.js';
 
 const router = express.Router();
 
-// Reuse SystemConfig model safely
-const SystemConfigSchema = new mongoose.Schema({
-  key: { type: String, required: true, unique: true },
-  value: { type: mongoose.Schema.Types.Mixed, required: true },
-  lastUpdated: { type: Date, default: Date.now }
-});
-const SystemConfig = mongoose.models.SystemConfig || mongoose.model('SystemConfig', SystemConfigSchema);
-
-// POST /api/recruit — public: submit application
+// POST /api/recruit — public: submit application to Prisma DB
 router.post('/', async (req, res) => {
   try {
-    const application = new Recruitment(req.body);
-    await application.save();
+    const {
+      name,
+      email,
+      phone,
+      rollNo,
+      branch,
+      batch,
+      semester,
+      interests,
+      esportsGame,
+      resume,
+      whyJoin
+    } = req.body;
+
+    if (!name || !email || !phone || !rollNo || !whyJoin) {
+      return res.status(400).json({ error: 'Please provide all required fields.' });
+    }
+
+    const cleanEmail = email.toLowerCase().trim();
+    const cleanRollNo = rollNo.trim();
+
+    // Check for existing application with email or rollNo
+    const existing = await prisma.recruitment.findFirst({
+      where: {
+        OR: [
+          { email: cleanEmail },
+          { rollNo: cleanRollNo }
+        ]
+      }
+    });
+
+    if (existing) {
+      return res.status(400).json({ error: 'You have already applied with this email or roll number.' });
+    }
+
+    const application = await prisma.recruitment.create({
+      data: {
+        name: name.trim(),
+        email: cleanEmail,
+        phone: phone.trim(),
+        rollNo: cleanRollNo,
+        branch: (branch || '').trim(),
+        batch: (batch || '2025').trim(),
+        semester: (semester || '1st Semester').trim(),
+        interests: Array.isArray(interests) ? interests : (interests ? [interests] : []),
+        esportsGame: esportsGame ? esportsGame.trim() : null,
+        resume: resume ? resume.trim() : null,
+        whyJoin: whyJoin.trim(),
+        status: 'pending',
+      }
+    });
 
     // Fetch WhatsApp group link from config (fallback to default)
     let whatsappLink = 'https://chat.whatsapp.com/G8Ds9PBrIlpFV5lpvClOVV?mode=gi_t';
     try {
-      const config = await SystemConfig.findOne({ key: 'whatsappGroupLink' });
-      if (config && config.value) whatsappLink = config.value;
+      const config = await prisma.systemConfig.findUnique({ where: { key: 'whatsappGroupLink' } });
+      if (config && config.value) {
+        whatsappLink = typeof config.value === 'string' ? config.value : (config.value.url || whatsappLink);
+      }
     } catch (_) {}
 
     // Send confirmation email
@@ -37,8 +79,9 @@ router.post('/', async (req, res) => {
           <p>Hi <strong>${application.name}</strong>,</p>
           <p>Thanks for applying to <strong>IGNITE Technical Innovation Club</strong>!</p>
           <p>We have received your application. We'll review it and get back to you soon regarding the next steps.</p>
+          <p><strong>Application ID:</strong> ${application.id}</p>
           <p><strong>Roll No:</strong> ${application.rollNo}</p>
-          <p><strong>Interests:</strong> ${Array.isArray(application.interests) ? application.interests.join(', ') : application.interests}</p>
+          <p><strong>Interests:</strong> ${application.interests.join(', ')}</p>
 
           <div style="background: #25D366; border-radius: 12px; padding: 20px; margin: 24px 0; text-align: center;">
             <p style="color: white; margin: 0 0 12px 0; font-size: 16px; font-weight: bold;">📱 Join our WhatsApp Group</p>
@@ -57,25 +100,36 @@ router.post('/', async (req, res) => {
         </div>
       </div>
     `;
-    
-    // Don't block the response if email fails
+
     sendEmail(application.email, 'IGNITE Recruitment: Application Received', emailHtml)
       .catch(err => console.error('Recruitment email failed:', err));
 
-    res.status(201).json({ message: 'Application submitted successfully!', id: application._id, whatsappLink });
+    res.status(201).json({
+      message: 'Application submitted successfully!',
+      id: application.id,
+      _id: application.id,
+      whatsappLink
+    });
   } catch (err) {
-    if (err.code === 11000) {
+    if (err.code === 'P2002' || err.code === 11000) {
       return res.status(400).json({ error: 'You have already applied with this email or roll number.' });
     }
     res.status(400).json({ error: err.message });
   }
 });
 
-// GET /api/recruit — admin: get all applications
+// GET /api/recruit — admin: get all applications from Prisma DB
 router.get('/', auth, async (req, res) => {
   try {
-    const applications = await Recruitment.find().sort({ createdAt: -1 });
-    res.json(applications);
+    const applications = await prisma.recruitment.findMany({
+      orderBy: { createdAt: 'desc' }
+    });
+    // Add _id alias for frontend compatibility
+    const formatted = applications.map(app => ({
+      ...app,
+      _id: app.id
+    }));
+    res.json(formatted);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -85,8 +139,14 @@ router.get('/', auth, async (req, res) => {
 router.patch('/:id', auth, async (req, res) => {
   try {
     const { status } = req.body;
-    const application = await Recruitment.findByIdAndUpdate(req.params.id, { status }, { new: true });
-    res.json(application);
+    const application = await prisma.recruitment.update({
+      where: { id: req.params.id },
+      data: { status }
+    });
+    res.json({
+      ...application,
+      _id: application.id
+    });
   } catch (err) {
     res.status(400).json({ error: err.message });
   }
@@ -95,7 +155,9 @@ router.patch('/:id', auth, async (req, res) => {
 // DELETE /api/recruit/:id — admin: delete
 router.delete('/:id', auth, async (req, res) => {
   try {
-    await Recruitment.findByIdAndDelete(req.params.id);
+    await prisma.recruitment.delete({
+      where: { id: req.params.id }
+    });
     res.json({ message: 'Deleted' });
   } catch (err) {
     res.status(400).json({ error: err.message });

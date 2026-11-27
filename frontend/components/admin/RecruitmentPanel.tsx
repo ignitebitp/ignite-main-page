@@ -79,6 +79,7 @@ export function RecruitmentPanel() {
             RollNo: app.rollNo,
             Branch: app.branch,
             Batch: app.batch,
+            Semester: app.semester || '1st Semester',
             Interests: Array.isArray(app.interests) ? app.interests.join(', ') : app.interests,
             EsportsGame: app.esportsGame || '',
             WhyJoin: app.whyJoin,
@@ -248,7 +249,10 @@ export function RecruitmentPanel() {
                                         </span>
                                     ))}
                                 </div>
-                                <div className="col-span-1 text-xs text-gray-400">{app.batch}</div>
+                                <div className="col-span-1 text-xs text-gray-400">
+                                    <div>{app.batch}</div>
+                                    <div className="text-[10px] text-primary">{app.semester || 'Sem 1'}</div>
+                                </div>
                                 <div className="col-span-2 text-xs text-gray-400 truncate">{app.branch}</div>
                                 <div className="col-span-2 flex items-center justify-between gap-2">
                                     <span className="text-xs text-gray-500 hidden md:block">{new Date(app.createdAt).toLocaleDateString()}</span>
@@ -266,6 +270,7 @@ export function RecruitmentPanel() {
                                         <Field label="Roll Number" value={app.rollNo} />
                                         <Field label="Branch" value={app.branch} />
                                         <Field label="Batch" value={app.batch} />
+                                        <Field label="Semester" value={app.semester || '1st Semester'} />
                                         <div>
                                             <div className="text-gray-500 text-xs mb-1">Interested In</div>
                                             <div className="flex flex-wrap gap-1">

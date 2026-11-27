@@ -28,14 +28,15 @@
     "@vitejs/plugin-react": "^5.0.0",
     "autoprefixer": "^10.4.24",
     "postcss": "^8.5.6",
-    "prisma": "^6.4.0",
+    "prisma": "^6.19.3",
     "tailwindcss": "^4.1.18",
     "typescript": "~5.8.2",
     "vite": "^6.2.0"
   },
   "dependencies": {
-    "@prisma/client": "^6.4.0",
+    "@prisma/client": "^6.19.3",
     "@vercel/analytics": "^1.6.1",
+    "@vercel/blob": "^2.9.0",
     "bcryptjs": "^3.0.3",
     "cors": "^2.8.6",
     "dotenv": "^17.3.1",
@@ -54,6 +55,14 @@
     "react": "^19.2.3",
     "react-dom": "^19.2.3",
     "react-router-dom": "^7.11.0",
+    "resend": "^6.38.0",
     "sharp": "^0.35.5"
+  },
+  "allowScripts": {
+    "esbuild@0.25.12": true,
+    "sharp@0.35.5": true,
+    "@prisma/client": true,
+    "@prisma/engines": true,
+    "prisma": true
   }
 }

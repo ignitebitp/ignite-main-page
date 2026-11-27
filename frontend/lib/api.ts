@@ -108,8 +108,14 @@ export const api = {
     updateTeamMember: (id: string, data: any) => api.request(`/api/team/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
     deleteTeamMember: (id: string) => api.request(`/api/team/${id}`, { method: 'DELETE' }),
 
-    // Admin Users
+    // Admin Users & Mailer
     getAdminUsers: () => api.request('/api/admin/users'),
+    getResendStatus: () => api.request('/api/admin/resend-status'),
+    sendAdminEmail: (data: { to?: string; subject: string; message?: string; html?: string; targetGroup?: string }) =>
+        api.request('/api/admin/send-email', { method: 'POST', body: JSON.stringify(data) }),
+
+    // Upload
+    uploadBlob: (formData: FormData) => api.request('/api/upload', { method: 'POST', body: formData }),
 
     // System Config
     getConfig: (key: string) => api.request(`/api/config/${key}`),

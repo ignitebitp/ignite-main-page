@@ -75,11 +75,11 @@ const Recruit: React.FC = () => {
     const [loading, setLoading] = useState(false);
     const [activeBatches, setActiveBatches] = useState<string[]>([]);
     const [form, setForm] = useState<{
-        name: string; email: string; phone: string; rollNo: string; branch: string; batch: string;
+        name: string; email: string; phone: string; rollNo: string; branch: string; batch: string; semester: string;
         interests: string[]; esportsGame: string;
         whyJoin: string;
     }>({
-        name: '', email: '', phone: '', rollNo: '', branch: '', batch: '2025',
+        name: '', email: '', phone: '', rollNo: '', branch: '', batch: '2025', semester: '1st Semester',
         interests: [], esportsGame: '',
         whyJoin: '',
     });
@@ -272,6 +272,26 @@ const Recruit: React.FC = () => {
                                 </div>
 
                                 <input name="branch" value={form.branch} onChange={handleChange} placeholder="Branch (e.g., CSE / ECE / BCA / AIML) *" required className={inputClass} />
+
+                                <div className="space-y-1.5">
+                                    <label className="text-xs font-mono-code text-gray-400 block">Current Semester *</label>
+                                    <select
+                                        name="semester"
+                                        value={form.semester}
+                                        onChange={handleChange}
+                                        required
+                                        className={`${inputClass} bg-[#0c1015] cursor-pointer`}
+                                    >
+                                        <option value="1st Semester">1st Semester</option>
+                                        <option value="2nd Semester">2nd Semester</option>
+                                        <option value="3rd Semester">3rd Semester</option>
+                                        <option value="4th Semester">4th Semester</option>
+                                        <option value="5th Semester">5th Semester</option>
+                                        <option value="6th Semester">6th Semester</option>
+                                        <option value="7th Semester">7th Semester</option>
+                                        <option value="8th Semester">8th Semester</option>
+                                    </select>
+                                </div>
 
                                 <div className="space-y-3 pt-2">
                                     <label className="text-xs font-mono-code text-gray-400 block mb-2">TARGET GUILD TRACK: *</label>

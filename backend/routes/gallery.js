@@ -1,112 +1,149 @@
 import express from 'express';
-import Gallery from '../models/Gallery.js';
+import prisma from '../prisma.js';
 import auth from '../middleware/auth.js';
 import multer from 'multer';
-import path from 'path';
-import fs from 'fs';
-import sharp from 'sharp';
-
-import { fileURLToPath } from 'url';
+import { uploadImage } from '../lib/blob.js';
 
 const router = express.Router();
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-// Point to server/uploads/gallery
-const UPLOADS_PATH = path.join(__dirname, '..', 'uploads', 'gallery');
-
-// Multer Config (Memory Storage for Sharp processing)
+// Multer Config (Memory Storage for Sharp / Blob processing)
 const storage = multer.memoryStorage();
 const upload = multer({ storage });
 
-// Helper to process and save image
-const saveImage = async (buffer) => {
-    if (!fs.existsSync(UPLOADS_PATH)) fs.mkdirSync(UPLOADS_PATH, { recursive: true });
-    
-    const filename = `${Date.now()}-${Math.round(Math.random() * 1E9)}.webp`;
-    const filepath = path.join(UPLOADS_PATH, filename);
-    
-    await sharp(buffer)
-        .resize(1200, 900, { fit: 'inside', withoutEnlargement: true })
-        .webp({ quality: 85 })
-        .toFile(filepath);
-        
-    return `/uploads/gallery/${filename}`;
+// Helper to format gallery item with _id alias
+const formatGallery = (item) => {
+  if (!item) return null;
+  return {
+    ...item,
+    _id: item.id,
+  };
 };
 
-// GET /api/gallery — public: list gallery items
+// GET /api/gallery — public: list gallery items from Prisma DB
 router.get('/', async (req, res) => {
-    try {
-        const items = await Gallery.find().sort({ date: -1, order: 1 });
-        res.json(items);
-    } catch (err) {
-        res.status(500).json({ error: err.message });
-    }
+  try {
+    const items = await prisma.gallery.findMany({
+      orderBy: [
+        { date: 'desc' },
+        { order: 'asc' },
+      ],
+    });
+    res.json(items.map(formatGallery));
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 });
 
-// POST /api/gallery — admin: add item
+// POST /api/gallery — admin: add item with Blob storage
 router.post('/', auth, upload.fields([{ name: 'image', maxCount: 1 }, { name: 'images', maxCount: 50 }]), async (req, res) => {
-    try {
-        const data = { ...req.body };
+  try {
+    const { title, coverUrl, link, category, order, date } = req.body;
+    let mainImageUrl = coverUrl || null;
 
-        // 1. Process Cover Image
-        if (req.files['image']) {
-            data.image = await saveImage(req.files['image'][0].buffer);
-        } else if (!data.coverUrl) {
-            return res.status(400).json({ error: 'Please provide a cover image (upload or URL).' });
-        }
-
-        // 2. Process Gallery Images (Album)
-        if (req.files['images']) {
-            const galleryPaths = [];
-            for (const file of req.files['images']) {
-                const path = await saveImage(file.buffer);
-                galleryPaths.push(path);
-            }
-            data.images = galleryPaths;
-        }
-
-        const item = new Gallery(data);
-        await item.save();
-        res.status(201).json(item);
-    } catch (err) {
-        res.status(400).json({ error: err.message });
+    // 1. Process Cover Image
+    if (req.files?.image?.[0]) {
+      mainImageUrl = await uploadImage(
+        `gallery/cover-${Date.now()}.webp`,
+        req.files.image[0].buffer,
+        { width: 1200, height: 900 }
+      );
+    } else if (!coverUrl) {
+      return res.status(400).json({ error: 'Please provide a cover image (upload or URL).' });
     }
+
+    // 2. Process Gallery Images (Album)
+    const galleryPaths = [];
+    if (req.files?.images) {
+      for (let i = 0; i < req.files.images.length; i++) {
+        const file = req.files.images[i];
+        const uploadedUrl = await uploadImage(
+          `gallery/photo-${Date.now()}-${i}.webp`,
+          file.buffer,
+          { width: 1600, height: 1200 }
+        );
+        galleryPaths.push(uploadedUrl);
+      }
+    }
+
+    const item = await prisma.gallery.create({
+      data: {
+        title: title || 'IGNITE Gallery Event',
+        image: mainImageUrl,
+        images: galleryPaths,
+        coverUrl: mainImageUrl,
+        link: link || null,
+        category: category || 'General',
+        order: Number(order) || 0,
+        date: date ? new Date(date) : new Date(),
+      },
+    });
+
+    res.status(201).json(formatGallery(item));
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
 });
 
 // PUT /api/gallery/:id — admin: update item
 router.put('/:id', auth, upload.fields([{ name: 'image', maxCount: 1 }, { name: 'images', maxCount: 50 }]), async (req, res) => {
-    try {
-        const data = { ...req.body };
+  try {
+    const { title, coverUrl, link, category, order, date } = req.body;
+    const updateData = {};
 
-        if (req.files['image']) {
-            data.image = await saveImage(req.files['image'][0].buffer);
-        }
+    if (title !== undefined) updateData.title = title;
+    if (link !== undefined) updateData.link = link;
+    if (category !== undefined) updateData.category = category;
+    if (order !== undefined) updateData.order = Number(order);
+    if (date !== undefined) updateData.date = new Date(date);
 
-        if (req.files['images']) {
-            const galleryPaths = [];
-            for (const file of req.files['images']) {
-                const path = await saveImage(file.buffer);
-                galleryPaths.push(path);
-            }
-            data.images = galleryPaths;
-        }
-
-        const item = await Gallery.findByIdAndUpdate(req.params.id, data, { new: true });
-        res.json(item);
-    } catch (err) {
-        res.status(400).json({ error: err.message });
+    if (req.files?.image?.[0]) {
+      const mainImageUrl = await uploadImage(
+        `gallery/cover-${Date.now()}.webp`,
+        req.files.image[0].buffer,
+        { width: 1200, height: 900 }
+      );
+      updateData.image = mainImageUrl;
+      updateData.coverUrl = mainImageUrl;
+    } else if (coverUrl !== undefined) {
+      updateData.coverUrl = coverUrl;
+      updateData.image = coverUrl;
     }
+
+    if (req.files?.images) {
+      const galleryPaths = [];
+      for (let i = 0; i < req.files.images.length; i++) {
+        const file = req.files.images[i];
+        const uploadedUrl = await uploadImage(
+          `gallery/photo-${Date.now()}-${i}.webp`,
+          file.buffer,
+          { width: 1600, height: 1200 }
+        );
+        galleryPaths.push(uploadedUrl);
+      }
+      updateData.images = galleryPaths;
+    }
+
+    const item = await prisma.gallery.update({
+      where: { id: req.params.id },
+      data: updateData,
+    });
+
+    res.json(formatGallery(item));
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
 });
 
 // DELETE /api/gallery/:id — admin: delete item
 router.delete('/:id', auth, async (req, res) => {
-    try {
-        await Gallery.findByIdAndDelete(req.params.id);
-        res.json({ message: 'Deleted from gallery' });
-    } catch (err) {
-        res.status(400).json({ error: err.message });
-    }
+  try {
+    await prisma.gallery.delete({
+      where: { id: req.params.id },
+    });
+    res.json({ message: 'Deleted from gallery' });
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
 });
 
 export default router;

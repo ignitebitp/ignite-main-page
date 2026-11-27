@@ -73,10 +73,21 @@ const Gallery: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="pt-32 pb-20 min-h-screen container mx-auto px-6 text-center">
-        <div className="flex items-center justify-center space-x-2 text-primary font-mono-code text-sm">
-          <span className="w-2.5 h-2.5 rounded-full bg-primary animate-ping" />
-          <span>Synchronizing visual repository...</span>
+      <div className="pt-32 pb-24 min-h-screen container mx-auto px-6" aria-busy="true" aria-label="Loading gallery">
+        <div className="max-w-3xl mx-auto text-center mb-14 space-y-4 animate-pulse">
+          <div className="h-12 w-3/4 mx-auto rounded-2xl bg-white/5" />
+          <div className="h-5 w-1/2 mx-auto rounded-xl bg-white/5" />
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 animate-pulse">
+          {[0, 1, 2, 3, 4, 5, 6, 7].map(i => (
+            <div key={i} className="glass-card rounded-2xl overflow-hidden">
+              <div className="aspect-[4/3] bg-white/5" />
+              <div className="p-4 space-y-2">
+                <div className="h-4 w-2/3 rounded bg-white/5" />
+                <div className="h-3 w-1/3 rounded bg-white/5" />
+              </div>
+            </div>
+          ))}
         </div>
       </div>
     );
@@ -103,13 +114,20 @@ const Gallery: React.FC = () => {
             <button
               key={cat}
               onClick={() => setFilter(cat)}
-              className={`px-5 py-2 rounded-full text-xs font-mono-code transition-all ${
+              className={`relative px-5 py-2 rounded-full text-xs font-mono-code transition-colors ${
                 filter === cat
-                  ? 'btn-cyber-primary shadow-lg'
+                  ? 'text-[#0b0f14] font-bold'
                   : 'bg-white/5 text-gray-400 hover:text-white hover:bg-white/10 border border-white/5'
               }`}
             >
-              {cat}
+              {filter === cat && (
+                <motion.span
+                  layoutId="galleryFilterPill"
+                  transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
+                  className="absolute inset-0 rounded-full btn-cyber-primary shadow-lg -z-10"
+                />
+              )}
+              <span className="relative z-10">{cat}</span>
             </button>
           ))}
         </div>

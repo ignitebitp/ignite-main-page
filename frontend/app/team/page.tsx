@@ -20,11 +20,11 @@ const TeamCard: React.FC<{ member: TeamMember; isExecutive?: boolean }> = ({
     <motion.div
       whileHover={{ y: -6 }}
       transition={{ duration: 0.3, ease: 'easeOut' }}
-      className="relative group flex justify-center"
+      className="relative group flex justify-center flex-shrink-0"
     >
-      <div className={`glass-card box-content rounded-2xl overflow-hidden flex flex-col border-t-[1.5px] border-t-white/40 group-hover:border-primary/50 transition-all duration-300 ${cardWidthClass} max-w-full shadow-lg`}>
+      <div className={`glass-card box-content rounded-2xl overflow-hidden flex flex-col border-t-[1.5px] border-t-white/40 group-hover:border-primary/50 transition-all duration-300 ${cardWidthClass} flex-shrink-0 shadow-lg`}>
         {/* Image placeholder: exactly 300x400 for Executive Board, 200x250 for others */}
-        <div className={`relative ${imgBoxClass} max-w-full overflow-hidden bg-[#0e1319] flex-shrink-0`}>
+        <div className={`relative ${imgBoxClass} overflow-hidden bg-[#0e1319] flex-shrink-0`}>
           <img
             src={member.image || '/placeholder.svg'}
             alt={member.name}
@@ -166,9 +166,9 @@ const Team: React.FC = () => {
                 CORE TECHNICAL TEAM
               </h2>
             </div>
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-6 max-w-[920px] mx-auto justify-items-center">
+            <div className="flex flex-wrap justify-center gap-6 max-w-6xl mx-auto">
               {coreTeam.map((member, index) => (
-                <SectionWrapper key={member.id} delay={index * 0.03} className="w-full flex justify-center">
+                <SectionWrapper key={member.id} delay={index * 0.03} className="flex justify-center flex-shrink-0">
                   <TeamCard member={member} />
                 </SectionWrapper>
               ))}
@@ -185,9 +185,9 @@ const Team: React.FC = () => {
                 MEMBERS & RESEARCHERS
               </h2>
             </div>
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-5 max-w-[1140px] mx-auto justify-items-center">
+            <div className="flex flex-wrap justify-center gap-6 max-w-6xl mx-auto">
               {members.map((member, index) => (
-                <SectionWrapper key={member.id} delay={index * 0.02} className="w-full flex justify-center">
+                <SectionWrapper key={member.id} delay={index * 0.02} className="flex justify-center flex-shrink-0">
                   <TeamCard member={member} />
                 </SectionWrapper>
               ))}

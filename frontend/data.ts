@@ -20,7 +20,7 @@ export const TEAM_MEMBERS: TeamMember[] = [
   { id: 10, name: "Shalini Shalu", role: "Design Lead", image: "/team/shalini.webp", socials: { linkedin: "#" } },
   { id: 11, name: "Niharika Soni", role: "Design Lead", image: "/team/niharika.webp", socials: { linkedin: "#" } },
 
-  { id: 12, name: "Gargi Priya", role: "Webmaster", image: "/team/gargi.webp", socials: { linkedin: "#" } },
+  { id: 12, name: "Gargi Priya", role: "Webmaster", image: "/team/gargi.jpeg", socials: { linkedin: "#" } },
 
   { id: 13, name: "Pratik Raj", role: "Resource Head", image: "/team/pratik.webp", socials: { linkedin: "#" } },
   { id: 14, name: "Rohit Gupta", role: "Resource Lead", image: "/team/rohitgupta.webp", socials: { linkedin: "#" } },
@@ -47,7 +47,7 @@ export const TEAM_MEMBERS: TeamMember[] = [
   { id: 20, name: "Aditya Kumar", role: "Member", image: "/team/adityakumar.webp", socials: { linkedin: "#" } },
   { id: 25, name: "Ritu Raj", role: "Member", image: "/team/rituraj.webp", socials: { linkedin: "#" } },
   { id: 24, name: "Daya Shankar", role: "Member", image: "/team/dayashankar.webp", socials: { linkedin: "#" } },
-  { id: 29, name: "Aayush Babu", role: "Member", image: "/team/aayushbabu.webp", socials: { linkedin: "#" } },
+  { id: 29, name: "Aayush Babu", role: "Member", image: "/team/aayushBabu.jpg", socials: { linkedin: "#" } },
 
   { id: 34, name: "Anushka Nandan", role: "Member", image: "/team/anushka.webp", socials: { linkedin: "#" } },
   { id: 32, name: "Aditi Maharor", role: "Member", image: "/team/aditimaharor.webp", socials: { linkedin: "#" } },

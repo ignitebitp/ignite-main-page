@@ -154,6 +154,7 @@ model Recruitment {
   rollNo      String   @unique
   branch      String
   batch       String   @default("2025")
+  semester    String   @default("1st Semester")
   interests   String[]
   esportsGame String?
   resume      String?

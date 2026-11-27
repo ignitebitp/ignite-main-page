@@ -210,9 +210,11 @@ export default function Register() {
                                     <Timer className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
                                     <input
                                         type="text" required maxLength={6}
+                                        autoComplete="one-time-code"
+                                        inputMode="numeric"
                                         value={otp}
                                         onChange={e => setOtp(e.target.value)}
-                                        className="w-full bg-white/5 border border-white/10 rounded-xl py-4 text-center text-2xl font-mono-code font-bold text-white outline-none focus:border-primary tracking-[0.4em] pl-6"
+                                        className="w-full bg-white/5 border border-white/10 rounded-xl py-4 text-center text-2xl font-mono-code font-bold tabular-nums text-white outline-none focus:border-primary tracking-[0.4em] pl-6"
                                         placeholder="000000"
                                     />
                                 </div>
@@ -331,11 +333,11 @@ export default function Register() {
                     {step === 4 && (
                         <motion.div
                             key="step4"
-                            initial={{ opacity: 0, scale: 0.8 }}
-                            animate={{ opacity: 1, scale: 1 }}
+                            initial={{ opacity: 0, scale: 0.95 }}
+                            animate={{ opacity: 1, scale: 1, transition: { duration: 0.25, ease: [0.16, 1, 0.3, 1] } }}
                             className="py-16 text-center"
                         >
-                            <div className="w-20 h-20 bg-cyber-green/10 rounded-full flex items-center justify-center mx-auto mb-6 border border-cyber-green/30">
+                            <div className="w-20 h-20 bg-cyber-green/10 rounded-full flex items-center justify-center mx-auto mb-6 border border-cyber-green/30 animate-success-pulse">
                                 <CheckCircle2 className="w-10 h-10 text-cyber-green" />
                             </div>
                             <span className="text-[10px] font-mono-code text-cyber-green uppercase tracking-widest block mb-1">

@@ -1,12 +1,23 @@
 import express from 'express';
-import Recruitment from '../models/Recruitment.js';
+import prisma from '../prisma.js';
 
 const router = express.Router();
 
-// GET /api/user/check/:email — public: check if user exists (for auto-fill)
+// GET /api/user/check/:email — public: check if user exists in recruitment
 router.get('/check/:email', async (req, res) => {
   try {
-    const user = await Recruitment.findOne({ email: req.params.email }).select('name email phone rollNo branch batch');
+    const user = await prisma.recruitment.findUnique({
+      where: { email: req.params.email.toLowerCase().trim() },
+      select: {
+        name: true,
+        email: true,
+        phone: true,
+        rollNo: true,
+        branch: true,
+        batch: true,
+        semester: true,
+      },
+    });
     if (user) {
       res.json({ found: true, user });
     } else {
@@ -17,26 +28,62 @@ router.get('/check/:email', async (req, res) => {
   }
 });
 
-// ... (existing index route if any)
-
+// GET /api/user/profile/:email — get aggregate profile for student
 router.get('/profile/:email', async (req, res) => {
-    try {
-        const { email } = req.params;
-        
-        const [recruitment, events, exams] = await Promise.all([
-            Recruitment.findOne({ email }).select('status interests branch batch'),
-            EventRegistration.find({ email }).populate('eventId', 'name date venue type'),
-            ExamSubmission.find({ email }).select('score totalQuestions status startedAt')
-        ]);
+  try {
+    const cleanEmail = req.params.email.toLowerCase().trim();
 
-        res.json({
-            recruitment,
-            events,
-            exams
-        });
-    } catch (err) {
-        res.status(500).json({ error: err.message });
-    }
+    const [recruitment, events, exams] = await Promise.all([
+      prisma.recruitment.findUnique({
+        where: { email: cleanEmail },
+        select: {
+          id: true,
+          status: true,
+          interests: true,
+          branch: true,
+          batch: true,
+          semester: true,
+          createdAt: true,
+        },
+      }),
+      prisma.eventRegistration.findMany({
+        where: { email: cleanEmail },
+        include: {
+          event: {
+            select: {
+              id: true,
+              name: true,
+              date: true,
+              venue: true,
+              type: true,
+            },
+          },
+        },
+      }),
+      prisma.examSubmission.findMany({
+        where: { email: cleanEmail },
+        select: {
+          id: true,
+          score: true,
+          totalQuestions: true,
+          status: true,
+          startedAt: true,
+        },
+      }),
+    ]);
+
+    res.json({
+      recruitment: recruitment ? { ...recruitment, _id: recruitment.id } : null,
+      events: events.map(e => ({
+        ...e,
+        _id: e.id,
+        eventId: e.event ? { ...e.event, _id: e.event.id } : null,
+      })),
+      exams: exams.map(x => ({ ...x, _id: x.id })),
+    });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 });
 
 export default router;

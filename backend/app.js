@@ -16,6 +16,7 @@ import configRoutes from './routes/config.js';
 import shareRoutes from './routes/share.js';
 import galleryRoutes from './routes/gallery.js';
 import adminUsersRoutes from './routes/adminUsers.js';
+import uploadRoutes from './routes/upload.js';
 
 dotenv.config();
 
@@ -53,6 +54,7 @@ app.use('/api/config', configRoutes);
 app.use('/api/user', userRoutes);
 app.use('/api/gallery', galleryRoutes);
 app.use('/api/admin', adminUsersRoutes);
+app.use('/api/upload', uploadRoutes);
 app.use('/share', shareRoutes);
 
 // Also handle /api/share in case of path prefix

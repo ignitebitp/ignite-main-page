@@ -109,7 +109,7 @@ const Alumni: React.FC = () => {
                     <h2 className="text-2xl md:text-3xl font-display font-bold text-white group-hover:text-primary transition-colors">
                       Class of {batch}
                     </h2>
-                    <span className="text-xs font-mono-code px-2 py-0.5 rounded-full bg-white/5 text-gray-400">
+                    <span className="text-xs font-mono-code tabular-nums px-2 py-0.5 rounded-full bg-white/5 text-gray-400">
                       {alumniByBatch[batch].length} MEMBERS
                     </span>
                   </div>
