@@ -92,11 +92,16 @@ const ProtectedImage: React.FC<ProtectedImageProps> = ({ src, alt, className = '
 
       try {
         const endpoint = getMediaEndpoint(targetSrc);
-        const res = await fetch(endpoint, {
-          credentials: 'same-origin',
-          cache: 'no-store',
-        });
-        if (!res.ok) throw new Error(`Media fetch failed (${res.status})`);
+        let res: Response | null = null;
+        for (let attempt = 0; attempt < 3; attempt++) {
+          res = await fetch(endpoint, {
+            credentials: 'same-origin',
+            cache: 'no-store',
+          });
+          if (res.ok || res.status < 500) break;
+          await new Promise((r) => setTimeout(r, 250 * (attempt + 1)));
+        }
+        if (!res || !res.ok) throw new Error(`Media fetch failed (${res?.status ?? 'network'})`);
         const blob = await res.blob();
         if (!active) return;
         objectUrl = URL.createObjectURL(blob);

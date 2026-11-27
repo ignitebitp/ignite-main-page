@@ -3,6 +3,67 @@ import prisma from '../prisma.js';
 
 const router = express.Router();
 
+// In-memory cache & prefix batch-loading to minimize Postgres connections
+const mediaCache = new Map();
+const prefixInFlight = new Map();
+const MAX_CACHE_ENTRIES = 120;
+
+const queryWithRetry = async (fn, retries = 3) => {
+  for (let i = 0; i < retries; i++) {
+    try {
+      return await fn();
+    } catch (err) {
+      const msg = String(err?.message || '');
+      if (
+        i < retries - 1 &&
+        (msg.includes('too many connections') ||
+          msg.includes('Timed out fetching') ||
+          msg.includes("Can't reach database server"))
+      ) {
+        await new Promise((r) => setTimeout(r, 300 * (i + 1)));
+        continue;
+      }
+      throw err;
+    }
+  }
+};
+
+const fetchAsset = async (key) => {
+  if (mediaCache.has(key)) {
+    return mediaCache.get(key);
+  }
+
+  // Batch-load all assets in the same folder (e.g. "team/" or "alumni/2k23/") in 1 query
+  const slashIdx = key.lastIndexOf('/');
+  const prefix = slashIdx !== -1 ? key.slice(0, slashIdx + 1) : key;
+
+  if (!prefixInFlight.has(prefix)) {
+    const batchPromise = queryWithRetry(async () => {
+      const assets = await prisma.mediaAsset.findMany({
+        where: { key: { startsWith: prefix } },
+        select: { key: true, mimeType: true, data: true },
+      });
+      for (const asset of assets) {
+        if (mediaCache.size >= MAX_CACHE_ENTRIES) {
+          const oldestKey = mediaCache.keys().next().value;
+          mediaCache.delete(oldestKey);
+        }
+        mediaCache.set(asset.key, {
+          mimeType: asset.mimeType,
+          buffer: Buffer.from(asset.data),
+        });
+      }
+    }).finally(() => {
+      prefixInFlight.delete(prefix);
+    });
+
+    prefixInFlight.set(prefix, batchPromise);
+  }
+
+  await prefixInFlight.get(prefix);
+  return mediaCache.get(key) || null;
+};
+
 /**
  * Secured media endpoint:
  * - Blocks direct tab navigation (Sec-Fetch-Dest: document / Sec-Fetch-Mode: navigate)
@@ -46,10 +107,7 @@ router.get('/', async (req, res) => {
       }
     }
 
-    const asset = await prisma.mediaAsset.findUnique({
-      where: { key },
-      select: { mimeType: true, data: true },
-    });
+    const asset = await fetchAsset(key);
 
     if (!asset) {
       return res.status(404).json({ error: 'Media not found' });
@@ -62,7 +120,7 @@ router.get('/', async (req, res) => {
     res.setHeader('X-Robots-Tag', 'noindex, noimageindex');
     res.setHeader('Content-Disposition', 'inline');
 
-    return res.send(Buffer.from(asset.data));
+    return res.send(asset.buffer);
   } catch (err) {
     console.error('Media fetch error:', err);
     return res.status(500).json({ error: 'Failed to load media' });
@@ -70,4 +128,3 @@ router.get('/', async (req, res) => {
 });
 
 export default router;
-
