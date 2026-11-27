@@ -103,11 +103,6 @@ const Footer: React.FC = () => {
                 </Link>
               </li>
               <li>
-                <Link to="/developers" className="hover:text-white hover:translate-x-1 inline-block transition-all">
-                  Engineering Team
-                </Link>
-              </li>
-              <li>
                 <Link to="/register" className="hover:text-white hover:translate-x-1 inline-block transition-all">
                   Student Registration
                 </Link>
@@ -154,13 +149,6 @@ const Footer: React.FC = () => {
               >
                 <Linkedin className="w-4 h-4" />
               </a>
-              <Link
-                to="/developers"
-                aria-label="Developers Terminal"
-                className="w-9 h-9 rounded-xl glass-card flex items-center justify-center text-gray-400 hover:text-primary hover:border-primary/40 transition-all duration-300"
-              >
-                <Terminal className="w-4 h-4" />
-              </Link>
             </div>
           </div>
         </div>
@@ -174,12 +162,6 @@ const Footer: React.FC = () => {
           <p className="text-[11px] text-gray-600">
             Engineered with high-tech specular design system. All telemetry operational.
           </p>
-          <Link
-            to="/developers"
-            className="text-gray-400 hover:text-primary transition-colors flex items-center gap-1"
-          >
-            <span>Developed by Aditya & Kishlaya</span>
-          </Link>
         </div>
       </div>
     </footer>

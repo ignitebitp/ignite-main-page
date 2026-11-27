@@ -6,13 +6,13 @@ import '@/index.css';
 export const metadata: Metadata = {
   title: 'IGNITE - Technical Innovation Club',
   description: 'Official website of IGNITE - The Technical Innovation Club. Empowering students through technology, innovation, and collaboration.',
-  metadataBase: new URL('https://ignite-technical-innovation-club.vercel.app'),
+  metadataBase: new URL('https://www.igniteclub.tech'),
   icons: {
     icon: '/image.png',
   },
   openGraph: {
     type: 'website',
-    url: 'https://ignite-technical-innovation-club.vercel.app/',
+    url: 'https://www.igniteclub.tech/',
     title: 'IGNITE - Technical Innovation Club',
     description: 'Empowering students through technology, innovation, and collaboration.',
     images: ['/igu.webp'],

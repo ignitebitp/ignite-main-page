@@ -9,6 +9,6 @@ export default function robots(): MetadataRoute.Robots {
         disallow: ['/admin', '/api/'],
       },
     ],
-    sitemap: 'https://ignitebitp.in/sitemap.xml',
+    sitemap: 'https://www.igniteclub.tech/sitemap.xml',
   };
 }
