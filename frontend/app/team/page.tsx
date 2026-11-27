@@ -2,19 +2,24 @@
 
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Linkedin, Mail, Shield, Sparkles, Terminal } from 'lucide-react';
+import { Linkedin, Globe, Sparkles } from 'lucide-react';
 import SectionWrapper from '@/components/SectionWrapper';
 import { TeamMember } from '@/types';
-import { TEAM_MEMBERS } from '@/data';
+import { TEAM_SECTION } from '@/data';
+
+const hasValidLink = (url?: string) => Boolean(url && url.trim() !== '' && url.trim() !== '#');
 
 const TeamCard: React.FC<{ member: TeamMember; isExecutive?: boolean }> = ({
   member,
   isExecutive = false,
 }) => {
-  const cardWidthClass = isExecutive ? 'w-[300px]' : 'w-[200px]';
-  const imgBoxClass = isExecutive ? 'w-[300px] h-[400px]' : 'w-[200px] h-[250px]';
-  const imgWidth = isExecutive ? 300 : 200;
-  const imgHeight = isExecutive ? 400 : 250;
+  const cardWidthClass = isExecutive ? 'w-[300px]' : 'w-[210px]';
+  const imgBoxClass = isExecutive ? 'w-[300px] h-[400px]' : 'w-[210px] h-[280px]';
+  const imgWidth = isExecutive ? 300 : 210;
+  const imgHeight = isExecutive ? 400 : 280;
+  const linkedinUrl = hasValidLink(member.socials?.linkedin) ? member.socials.linkedin!.trim() : '';
+  const websiteUrl = hasValidLink(member.socials?.website) ? member.socials.website!.trim() : '';
+  const hasAnyLink = Boolean(linkedinUrl || websiteUrl);
 
   return (
     <motion.div
@@ -37,34 +42,43 @@ const TeamCard: React.FC<{ member: TeamMember; isExecutive?: boolean }> = ({
           {/* Gradient overlay */}
           <div className="absolute inset-0 bg-gradient-to-t from-[#0b0f14]/80 via-transparent to-transparent opacity-60 pointer-events-none" />
 
-          {/* Socials floating trigger */}
-          {member.socials?.linkedin && member.socials.linkedin !== '#' && (
-            <div className={`absolute ${isExecutive ? 'top-3 right-3' : 'top-2.5 right-2.5'} opacity-0 group-hover:opacity-100 transition-opacity duration-200 z-10`}>
-              <a
-                href={member.socials.linkedin}
-                target="_blank"
-                rel="noopener noreferrer"
-                className={`${isExecutive ? 'w-8 h-8' : 'w-7 h-7'} rounded-full bg-black/70 backdrop-blur-md border border-white/20 flex items-center justify-center text-white hover:text-primary transition-colors shadow-md`}
-                aria-label={`${member.name} LinkedIn`}
-              >
-                <Linkedin size={isExecutive ? 16 : 14} />
-              </a>
+          {/* Socials floating trigger on image bottom-left */}
+          {hasAnyLink && (
+            <div className={`absolute ${isExecutive ? 'bottom-3 left-3' : 'bottom-2.5 left-2.5'} flex items-center gap-1.5 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity duration-200 z-20`}>
+              {linkedinUrl && (
+                <a
+                  href={linkedinUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={`${isExecutive ? 'w-9 h-9' : 'w-8 h-8'} rounded-full bg-black/75 backdrop-blur-md border border-white/20 flex items-center justify-center text-white hover:text-primary hover:border-primary/50 transition-colors shadow-md`}
+                  aria-label={`${member.name} LinkedIn`}
+                >
+                  <Linkedin size={isExecutive ? 16 : 14} />
+                </a>
+              )}
+              {websiteUrl && (
+                <a
+                  href={websiteUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={`${isExecutive ? 'w-9 h-9' : 'w-8 h-8'} rounded-full bg-black/75 backdrop-blur-md border border-white/20 flex items-center justify-center text-white hover:text-primary hover:border-primary/50 transition-colors shadow-md`}
+                  aria-label={`${member.name} Website`}
+                >
+                  <Globe size={isExecutive ? 16 : 14} />
+                </a>
+              )}
             </div>
           )}
-
-          {/* Role badge overlay on image */}
-          <div className={`absolute ${isExecutive ? 'bottom-3' : 'bottom-2'} inset-x-2 z-10 flex justify-center pointer-events-none`}>
-            <span className={`inline-block ${isExecutive ? 'px-3 py-1 text-[11px]' : 'px-2 py-0.5 text-[9px]'} rounded-full bg-black/80 backdrop-blur-md border border-white/10 font-mono-code uppercase tracking-wider text-primary truncate max-w-full text-center`}>
-              {member.role}
-            </span>
-          </div>
         </div>
 
-        {/* Other paddings and content take extra space below the image placeholder */}
-        <div className={`${isExecutive ? 'p-4' : 'p-3'} text-center flex-1 flex flex-col justify-center`}>
+        {/* Name & role below the image */}
+        <div className={`${isExecutive ? 'p-4' : 'p-3'} text-center flex-1 flex flex-col justify-center gap-1.5`}>
           <h3 className={`${isExecutive ? 'text-base sm:text-lg' : 'text-xs'} font-display font-bold text-white group-hover:text-primary transition-colors line-clamp-2 leading-tight`} title={member.name}>
             {member.name}
           </h3>
+          <span className={`inline-block mx-auto ${isExecutive ? 'px-3 py-0.5 text-[11px]' : 'px-2 py-0.5 text-[9px]'} rounded-full bg-white/5 border border-white/10 font-mono-code uppercase tracking-wider text-primary truncate max-w-full`}>
+            {member.role}
+          </span>
         </div>
       </div>
     </motion.div>
@@ -72,19 +86,12 @@ const TeamCard: React.FC<{ member: TeamMember; isExecutive?: boolean }> = ({
 };
 
 const Team: React.FC = () => {
-  const president = TEAM_MEMBERS.find(m => m.role.toLowerCase() === 'president');
-  const vicePresidents = TEAM_MEMBERS.filter(m => m.role.toLowerCase().includes('vice president'));
-  const secretary = TEAM_MEMBERS.find(m => m.role.toLowerCase() === 'secretary');
-  const treasurer = TEAM_MEMBERS.find(m => m.role.toLowerCase() === 'treasurer');
+  const executiveBoard = TEAM_SECTION.executiveBoard;
+  const president = executiveBoard.find(m => m.role.toLowerCase() === 'president');
+  const otherExecutives = executiveBoard.filter(m => m !== president);
 
-  const coreTeam = TEAM_MEMBERS.filter(
-    m =>
-      !['president', 'vice president', 'secretary', 'treasurer', 'member'].includes(
-        m.role.toLowerCase()
-      ) && !m.role.toLowerCase().includes('vice president')
-  );
-
-  const members = TEAM_MEMBERS.filter(m => m.role.toLowerCase() === 'member');
+  const coreTeam = TEAM_SECTION.coreTechnicalTeam;
+  const members = TEAM_SECTION.members;
 
   return (
     <div className="pt-32 pb-24 min-h-screen">
@@ -128,36 +135,26 @@ const Team: React.FC = () => {
             </h2>
           </div>
 
-          <div className="flex flex-wrap justify-center gap-8 max-w-6xl mx-auto mb-10">
-            {president && (
-              <SectionWrapper delay={0.1} className="flex justify-center">
+          {/* Top Row: Only President centered */}
+          {president && (
+            <div className="flex justify-center max-w-[964px] mx-auto mb-10">
+              <SectionWrapper delay={0.06} className="flex justify-center">
                 <TeamCard member={president} isExecutive />
               </SectionWrapper>
-            )}
+            </div>
+          )}
 
-            {vicePresidents.map((vp, index) => (
-              <SectionWrapper key={vp.id} delay={0.2 + index * 0.1} className="flex justify-center">
-                <TeamCard member={vp} isExecutive />
+          {/* Remaining Executive Board in 3 Columns */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 justify-items-center max-w-[964px] mx-auto">
+            {otherExecutives.map((exec, index) => (
+              <SectionWrapper key={`${exec.name}-${exec.role}-${index}`} delay={0.1 + index * 0.03} className="flex justify-center">
+                <TeamCard member={exec} isExecutive />
               </SectionWrapper>
             ))}
           </div>
-
-          <div className="flex flex-wrap justify-center gap-8 max-w-4xl mx-auto">
-            {secretary && (
-              <SectionWrapper delay={0.35} className="flex justify-center">
-                <TeamCard member={secretary} isExecutive />
-              </SectionWrapper>
-            )}
-
-            {treasurer && (
-              <SectionWrapper delay={0.45} className="flex justify-center">
-                <TeamCard member={treasurer} isExecutive />
-              </SectionWrapper>
-            )}
-          </div>
         </div>
 
-        {/* Core Team */}
+        {/* Core Team (70% scaled cards fitted to the exact same container width) */}
         {coreTeam.length > 0 && (
           <div className="mb-20">
             <div className="flex items-center space-x-3 mb-8">
@@ -166,9 +163,9 @@ const Team: React.FC = () => {
                 CORE TECHNICAL TEAM
               </h2>
             </div>
-            <div className="flex flex-wrap justify-center gap-6 max-w-6xl mx-auto">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-6 gap-y-6 justify-items-center max-w-[964px] mx-auto">
               {coreTeam.map((member, index) => (
-                <SectionWrapper key={member.id} delay={index * 0.03} className="flex justify-center flex-shrink-0">
+                <SectionWrapper key={`${member.name}-${member.role}-${index}`} delay={index * 0.03} className="flex justify-center flex-shrink-0">
                   <TeamCard member={member} />
                 </SectionWrapper>
               ))}
@@ -182,12 +179,11 @@ const Team: React.FC = () => {
             <div className="flex items-center space-x-3 mb-8">
               <div className="w-6 h-[2px] bg-primary" />
               <h2 className="text-xs font-mono-code uppercase tracking-[0.2em] text-primary">
-                MEMBERS & RESEARCHERS
-              </h2>
+                Senior Coordinators              </h2>
             </div>
             <div className="flex flex-wrap justify-center gap-6 max-w-6xl mx-auto">
               {members.map((member, index) => (
-                <SectionWrapper key={member.id} delay={index * 0.02} className="flex justify-center flex-shrink-0">
+                <SectionWrapper key={`${member.name}-${member.role}-${index}`} delay={index * 0.02} className="flex justify-center flex-shrink-0">
                   <TeamCard member={member} />
                 </SectionWrapper>
               ))}

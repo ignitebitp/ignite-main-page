@@ -1,0 +1,223 @@
+{
+  "2k23": [
+    {
+      "name": "Aditya Agarwal",
+      "role": "Vice President",
+      "image": "/team/aditya.webp",
+      "linkedin": "https://www.linkedin.com/in/aditya2227",
+      "website": ""
+    },
+    {
+      "name": "Arfa Khanam",
+      "role": "PR Lead",
+      "image": "/team/arfa.webp",
+      "linkedin": "",
+      "website": ""
+    },
+    {
+      "name": "Bhavini Awasthi",
+      "role": "Finance Head",
+      "image": "/team/bhavini.webp",
+      "linkedin": "",
+      "website": ""
+    },
+    {
+      "name": "Gargi Priya",
+      "role": "Webmaster",
+      "image": "/team/gargi.jpeg",
+      "linkedin": "",
+      "website": ""
+    },
+    {
+      "name": "Kalpana",
+      "role": "Design Head",
+      "image": "/team/kalpana.webp",
+      "linkedin": "",
+      "website": ""
+    },
+    {
+      "name": "Kishlaya Sinha",
+      "role": "President",
+      "image": "/team/kishlaya.webp",
+      "linkedin": "https://www.linkedin.com/in/kishlaya-sinha-9134a0211",
+      "website": ""
+    },
+    {
+      "name": "Niharika Soni",
+      "role": "Design Lead",
+      "image": "/team/niharika.webp",
+      "linkedin": "",
+      "website": ""
+    },
+    {
+      "name": "Pratik Raj",
+      "role": "Resource Head",
+      "image": "/team/pratik.webp",
+      "linkedin": "",
+      "website": ""
+    },
+    {
+      "name": "Prem Kumar Singh",
+      "role": "Event Head",
+      "image": "/team/premkumar.webp",
+      "linkedin": "",
+      "website": ""
+    },
+    {
+      "name": "Prince Chaturvedi",
+      "role": "Resource Lead",
+      "image": "/team/prince.webp",
+      "linkedin": "",
+      "website": ""
+    },
+    {
+      "name": "Priyanka Agrawal",
+      "role": "Event Lead",
+      "image": "/team/priyanka.webp",
+      "linkedin": "",
+      "website": ""
+    },
+    {
+      "name": "Rohit Gupta",
+      "role": "Resource Lead",
+      "image": "/team/rohitgupta.webp",
+      "linkedin": "",
+      "website": ""
+    },
+    {
+      "name": "Saumya Kumari",
+      "role": "Vice President",
+      "image": "/team/saumya.webp",
+      "linkedin": "",
+      "website": ""
+    },
+    {
+      "name": "Shalini Shalu",
+      "role": "Design Lead",
+      "image": "/team/shalini.webp",
+      "linkedin": "",
+      "website": ""
+    },
+    {
+      "name": "Shayan Ahmad Khan",
+      "role": "PR Head",
+      "image": "/team/shayan.webp",
+      "linkedin": "",
+      "website": ""
+    },
+    {
+      "name": "Shivam Lal",
+      "role": "Treasurer",
+      "image": "/team/shivam.webp",
+      "linkedin": "",
+      "website": ""
+    },
+    {
+      "name": "Tushan Jyoti",
+      "role": "Finance Lead",
+      "image": "/team/tushan.webp",
+      "linkedin": "",
+      "website": ""
+    },
+    {
+      "name": "Vishal Kumar Singh",
+      "role": "Secretary",
+      "image": "/team/vishalkr.webp",
+      "linkedin": "",
+      "website": ""
+    }
+  ],
+  "2k22": [
+    {
+      "name": "Aditya Kumar",
+      "role": "Alumnus",
+      "image": "/alumni/aditya.svg",
+      "linkedin": "",
+      "website": ""
+    },
+    {
+      "name": "Anshika Pandey",
+      "role": "Alumnus",
+      "image": "/alumni/anshika.webp",
+      "linkedin": "",
+      "website": ""
+    },
+    {
+      "name": "Parth Kumar",
+      "role": "Alumnus",
+      "image": "/alumni/parth.webp",
+      "linkedin": "",
+      "website": ""
+    },
+    {
+      "name": "Pragati",
+      "role": "Alumnus",
+      "image": "/alumni/pragati.svg",
+      "linkedin": "",
+      "website": ""
+    },
+    {
+      "name": "Prem Kamal",
+      "role": "Alumnus",
+      "image": "/alumni/premkamal.webp",
+      "linkedin": "",
+      "website": ""
+    },
+    {
+      "name": "Priyanshu Shankar",
+      "role": "Alumnus",
+      "image": "/alumni/priyanshu.webp",
+      "linkedin": "",
+      "website": ""
+    },
+    {
+      "name": "Rishav",
+      "role": "Alumnus",
+      "image": "/alumni/rishav.webp",
+      "linkedin": "",
+      "website": ""
+    },
+    {
+      "name": "Sakshi Sharan",
+      "role": "Alumnus",
+      "image": "/alumni/sakshisharan.webp",
+      "linkedin": "",
+      "website": ""
+    },
+    {
+      "name": "Shashwat Srivastava",
+      "role": "Alumnus",
+      "image": "/placeholder.svg",
+      "linkedin": "",
+      "website": ""
+    },
+    {
+      "name": "Shubham Ghosh",
+      "role": "Alumnus",
+      "image": "/placeholder.svg",
+      "linkedin": "",
+      "website": ""
+    },
+    {
+      "name": "Shweta",
+      "role": "Alumnus",
+      "image": "/alumni/shwetachoudhari.webp",
+      "linkedin": "",
+      "website": ""
+    },
+    {
+      "name": "Tripti Kumari",
+      "role": "Alumnus",
+      "image": "/alumni/tripti.webp",
+      "linkedin": "",
+      "website": ""
+    },
+    {
+      "name": "Yuvika",
+      "role": "Alumnus",
+      "image": "/placeholder.svg",
+      "linkedin": "",
+      "website": ""
+    }
+  ]
+}
