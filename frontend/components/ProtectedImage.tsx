@@ -9,12 +9,44 @@ interface ProtectedImageProps {
   className?: string;
 }
 
-const getMediaEndpoint = (src: string): string => {
-  const clean = src.replace(/^\/+/, '');
-  if (clean.startsWith('team/') || clean.startsWith('alumni/')) {
-    return `${API_URL}/api/media?key=${encodeURIComponent(clean)}`;
+// Shared client-side bundle cache so all cards on a page make 1 single /api/media/bundle request
+const bundlePromises = new Map<string, Promise<Record<string, string>>>();
+
+const getPrefix = (cleanKey: string): string | null => {
+  if (!cleanKey.startsWith('team/') && !cleanKey.startsWith('alumni/')) return null;
+  const slashIdx = cleanKey.lastIndexOf('/');
+  return slashIdx !== -1 ? cleanKey.slice(0, slashIdx + 1) : null;
+};
+
+const fetchBundle = (prefix: string): Promise<Record<string, string>> => {
+  if (!bundlePromises.has(prefix)) {
+    const promise = (async () => {
+      let lastErr: unknown;
+      for (let attempt = 0; attempt < 3; attempt++) {
+        try {
+          const res = await fetch(
+            `${API_URL}/api/media/bundle?prefix=${encodeURIComponent(prefix)}`,
+            { credentials: 'same-origin', cache: 'no-store' }
+          );
+          if (res.ok) {
+            const json = await res.json();
+            return (json?.assets as Record<string, string>) || {};
+          }
+          if (res.status < 500) {
+            throw new Error(`Bundle fetch failed (${res.status})`);
+          }
+          lastErr = new Error(`Bundle fetch failed (${res.status})`);
+        } catch (err) {
+          lastErr = err;
+        }
+        await new Promise((r) => setTimeout(r, 300 * (attempt + 1)));
+      }
+      bundlePromises.delete(prefix);
+      throw lastErr || new Error('Bundle fetch failed');
+    })();
+    bundlePromises.set(prefix, promise);
   }
-  return src;
+  return bundlePromises.get(prefix)!;
 };
 
 const ProtectedImage: React.FC<ProtectedImageProps> = ({ src, alt, className = '' }) => {
@@ -23,15 +55,10 @@ const ProtectedImage: React.FC<ProtectedImageProps> = ({ src, alt, className = '
 
   useEffect(() => {
     let active = true;
-    let objectUrl: string | null = null;
 
-    const drawToCanvas = (url: string, isBlob: boolean) => {
+    const drawToCanvas = (url: string) => {
       const img = new Image();
       img.onload = () => {
-        if (isBlob && objectUrl) {
-          URL.revokeObjectURL(objectUrl);
-          objectUrl = null;
-        }
         if (!active) return;
 
         const canvas = canvasRef.current;
@@ -47,7 +74,6 @@ const ProtectedImage: React.FC<ProtectedImageProps> = ({ src, alt, className = '
         canvas.width = targetW;
         canvas.height = targetH;
 
-        // Object-cover crop calculation
         const imgRatio = img.naturalWidth / Math.max(img.naturalHeight, 1);
         const boxRatio = targetW / targetH;
         let sx = 0;
@@ -69,12 +95,8 @@ const ProtectedImage: React.FC<ProtectedImageProps> = ({ src, alt, className = '
       };
 
       img.onerror = () => {
-        if (isBlob && objectUrl) {
-          URL.revokeObjectURL(objectUrl);
-          objectUrl = null;
-        }
         if (active && url !== '/placeholder.svg') {
-          drawToCanvas('/placeholder.svg', false);
+          drawToCanvas('/placeholder.svg');
         }
       };
 
@@ -86,30 +108,31 @@ const ProtectedImage: React.FC<ProtectedImageProps> = ({ src, alt, className = '
       const targetSrc = src || '/placeholder.svg';
 
       if (targetSrc === '/placeholder.svg') {
-        drawToCanvas('/placeholder.svg', false);
+        drawToCanvas('/placeholder.svg');
+        return;
+      }
+
+      const cleanKey = targetSrc.replace(/^\/+/, '');
+      const prefix = getPrefix(cleanKey);
+
+      if (!prefix) {
+        drawToCanvas(targetSrc);
         return;
       }
 
       try {
-        const endpoint = getMediaEndpoint(targetSrc);
-        let res: Response | null = null;
-        for (let attempt = 0; attempt < 3; attempt++) {
-          res = await fetch(endpoint, {
-            credentials: 'same-origin',
-            cache: 'no-store',
-          });
-          if (res.ok || res.status < 500) break;
-          await new Promise((r) => setTimeout(r, 250 * (attempt + 1)));
-        }
-        if (!res || !res.ok) throw new Error(`Media fetch failed (${res?.status ?? 'network'})`);
-        const blob = await res.blob();
+        const assets = await fetchBundle(prefix);
         if (!active) return;
-        objectUrl = URL.createObjectURL(blob);
-        drawToCanvas(objectUrl, true);
+        const dataUri = assets[cleanKey];
+        if (dataUri) {
+          drawToCanvas(dataUri);
+        } else {
+          drawToCanvas('/placeholder.svg');
+        }
       } catch (err) {
         console.warn('ProtectedImage fallback to placeholder for:', targetSrc, err);
         if (active) {
-          drawToCanvas('/placeholder.svg', false);
+          drawToCanvas('/placeholder.svg');
         }
       }
     };
@@ -118,9 +141,6 @@ const ProtectedImage: React.FC<ProtectedImageProps> = ({ src, alt, className = '
 
     return () => {
       active = false;
-      if (objectUrl) {
-        URL.revokeObjectURL(objectUrl);
-      }
     };
   }, [src]);
 
@@ -153,7 +173,6 @@ const ProtectedImage: React.FC<ProtectedImageProps> = ({ src, alt, className = '
       {!loaded && (
         <div className="absolute inset-0 bg-white/5 animate-pulse" aria-hidden="true" />
       )}
-      {/* Transparent interaction shield prevents direct canvas/image save actions */}
       <div
         aria-hidden="true"
         onContextMenu={blockEvent}
@@ -165,4 +184,3 @@ const ProtectedImage: React.FC<ProtectedImageProps> = ({ src, alt, className = '
 };
 
 export default ProtectedImage;
-

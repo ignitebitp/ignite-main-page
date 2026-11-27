@@ -28,15 +28,7 @@ const queryWithRetry = async (fn, retries = 3) => {
   }
 };
 
-const fetchAsset = async (key) => {
-  if (mediaCache.has(key)) {
-    return mediaCache.get(key);
-  }
-
-  // Batch-load all assets in the same folder (e.g. "team/" or "alumni/2k23/") in 1 query
-  const slashIdx = key.lastIndexOf('/');
-  const prefix = slashIdx !== -1 ? key.slice(0, slashIdx + 1) : key;
-
+const loadPrefix = async (prefix) => {
   if (!prefixInFlight.has(prefix)) {
     const batchPromise = queryWithRetry(async () => {
       const assets = await prisma.mediaAsset.findMany({
@@ -61,14 +53,93 @@ const fetchAsset = async (key) => {
   }
 
   await prefixInFlight.get(prefix);
+};
+
+const fetchAsset = async (key) => {
+  if (mediaCache.has(key)) {
+    return mediaCache.get(key);
+  }
+
+  const slashIdx = key.lastIndexOf('/');
+  const prefix = slashIdx !== -1 ? key.slice(0, slashIdx + 1) : key;
+  await loadPrefix(prefix);
   return mediaCache.get(key) || null;
 };
 
+const checkMediaAccess = (req, res) => {
+  const fetchDest = String(req.headers['sec-fetch-dest'] || '').toLowerCase();
+  const fetchMode = String(req.headers['sec-fetch-mode'] || '').toLowerCase();
+  const fetchSite = String(req.headers['sec-fetch-site'] || '').toLowerCase();
+
+  if (fetchDest === 'document' || fetchMode === 'navigate') {
+    res.status(403).json({ error: 'Direct image viewing is disabled' });
+    return false;
+  }
+
+  if (fetchSite === 'cross-site') {
+    res.status(403).json({ error: 'Cross-site access denied' });
+    return false;
+  }
+
+  const rawHosts = [req.headers.host, req.headers['x-forwarded-host']]
+    .filter(Boolean)
+    .flatMap((h) => String(h).split(',').map((s) => s.trim().toLowerCase()))
+    .filter(Boolean);
+  const referer = req.headers.referer || req.headers.origin;
+  if (referer && rawHosts.length > 0) {
+    try {
+      const refHost = new URL(referer).host.toLowerCase();
+      if (!rawHosts.includes(refHost)) {
+        res.status(403).json({ error: 'Origin mismatch' });
+        return false;
+      }
+    } catch {
+      res.status(403).json({ error: 'Invalid origin' });
+      return false;
+    }
+  }
+
+  return true;
+};
+
 /**
- * Secured media endpoint:
- * - Blocks direct tab navigation (Sec-Fetch-Dest: document / Sec-Fetch-Mode: navigate)
- * - Blocks cross-site hotlinking (Sec-Fetch-Site: cross-site or mismatched Referer/Origin)
- * - Disables browser caching and search engine image indexing
+ * Batch endpoint: fetches all images for a prefix (e.g. "team/" or "alumni/2k23/")
+ * in 1 HTTP request and 1 DB query so serverless lambdas never exhaust Postgres connections.
+ */
+router.get('/bundle', async (req, res) => {
+  try {
+    const rawPrefix = typeof req.query.prefix === 'string' ? req.query.prefix : '';
+    const prefix = rawPrefix.replace(/^\/+/, '').trim();
+
+    if (!prefix || prefix.includes('..') || (!prefix.startsWith('team/') && !prefix.startsWith('alumni/'))) {
+      return res.status(400).json({ error: 'Invalid media prefix' });
+    }
+
+    if (!checkMediaAccess(req, res)) return;
+
+    await loadPrefix(prefix);
+
+    const assets = {};
+    for (const [key, entry] of mediaCache.entries()) {
+      if (key.startsWith(prefix)) {
+        assets[key] = `data:${entry.mimeType};base64,${entry.buffer.toString('base64')}`;
+      }
+    }
+
+    res.setHeader('Cache-Control', 'private, no-store, no-cache, must-revalidate');
+    res.setHeader('Pragma', 'no-cache');
+    res.setHeader('X-Content-Type-Options', 'nosniff');
+    res.setHeader('X-Robots-Tag', 'noindex, noimageindex');
+
+    return res.json({ assets });
+  } catch (err) {
+    console.error('Media bundle fetch error:', err);
+    return res.status(500).json({ error: 'Failed to load media bundle' });
+  }
+});
+
+/**
+ * Secured single-media endpoint
  */
 router.get('/', async (req, res) => {
   try {
@@ -79,33 +150,7 @@ router.get('/', async (req, res) => {
       return res.status(400).json({ error: 'Invalid media key' });
     }
 
-    const fetchDest = String(req.headers['sec-fetch-dest'] || '').toLowerCase();
-    const fetchMode = String(req.headers['sec-fetch-mode'] || '').toLowerCase();
-    const fetchSite = String(req.headers['sec-fetch-site'] || '').toLowerCase();
-
-    if (fetchDest === 'document' || fetchMode === 'navigate') {
-      return res.status(403).json({ error: 'Direct image viewing is disabled' });
-    }
-
-    if (fetchSite === 'cross-site') {
-      return res.status(403).json({ error: 'Cross-site access denied' });
-    }
-
-    const rawHosts = [req.headers.host, req.headers['x-forwarded-host']]
-      .filter(Boolean)
-      .flatMap((h) => String(h).split(',').map((s) => s.trim().toLowerCase()))
-      .filter(Boolean);
-    const referer = req.headers.referer || req.headers.origin;
-    if (referer && rawHosts.length > 0) {
-      try {
-        const refHost = new URL(referer).host.toLowerCase();
-        if (!rawHosts.includes(refHost)) {
-          return res.status(403).json({ error: 'Origin mismatch' });
-        }
-      } catch {
-        return res.status(403).json({ error: 'Invalid origin' });
-      }
-    }
+    if (!checkMediaAccess(req, res)) return;
 
     const asset = await fetchAsset(key);
 
