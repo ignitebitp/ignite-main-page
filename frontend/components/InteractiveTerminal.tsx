@@ -15,11 +15,19 @@ const InteractiveTerminal: React.FC = () => {
   ]);
   const [isDecrypting, setIsDecrypting] = useState(false);
   const [copied, setCopied] = useState(false);
-  const bottomRef = useRef<HTMLDivElement>(null);
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const isFirstRender = useRef(true);
 
   useEffect(() => {
-    bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
+    if (isFirstRender.current) {
+      isFirstRender.current = false;
+      return;
+    }
+    const container = scrollContainerRef.current;
+    if (container) {
+      container.scrollTo({ top: container.scrollHeight, behavior: 'smooth' });
+    }
   }, [history, isDecrypting]);
 
   const handleCopyFlag = (flagText: string) => {
@@ -169,6 +177,7 @@ Permission: Standard Interactive Shell. Run "decrypt" to escalate privileges.`,
 
       {/* Terminal Body */}
       <div
+        ref={scrollContainerRef}
         className="p-5 font-mono-code text-xs md:text-sm bg-[#0b0f14]/90 h-[360px] overflow-y-auto space-y-2 cursor-text"
         onClick={() => inputRef.current?.focus()}
       >
@@ -248,11 +257,8 @@ Permission: Standard Interactive Shell. Run "decrypt" to escalate privileges.`,
             onChange={(e) => setInput(e.target.value)}
             className="flex-1 bg-transparent text-white outline-none font-mono-code placeholder-gray-600 border-none p-0 focus:ring-0"
             placeholder={isDecrypting ? 'Executing...' : 'type a command (e.g. help, decrypt)'}
-            autoFocus
           />
         </form>
-
-        <div ref={bottomRef} />
       </div>
 
       {/* Terminal Footer Quick Actions */}
