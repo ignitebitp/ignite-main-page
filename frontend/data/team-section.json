@@ -4,50 +4,71 @@
       "name": "Rajeev Raj",
       "post": "Executive Board",
       "role": "President",
-      "image": "/team/rajeev.webp",
-      "socials": { "linkedin": "", "website": "" }
+      "image": "/team/rajeev-raj.webp",
+      "socials": {
+        "linkedin": "",
+        "website": ""
+      }
     },
     {
       "name": "Abhishek Anand",
       "post": "Executive Board",
       "role": "Joint President",
-      "image": "/team/abhishek.webp",
-      "socials": { "linkedin": "", "website": "" }
+      "image": "/team/abhishek-anand.webp",
+      "socials": {
+        "linkedin": "",
+        "website": ""
+      }
     },
     {
       "name": "Aayush Babu",
       "post": "Executive Board",
       "role": "Vice President",
-      "image": "/team/aayushBabu.jpg",
-      "socials": { "linkedin": "", "website": "" }
+      "image": "/team/aayush-babu.webp",
+      "socials": {
+        "linkedin": "",
+        "website": ""
+      }
     },
     {
-      "name": "Nipun",
+      "name": "Nipun Sinha",
       "post": "Executive Board",
       "role": "General Secretary",
-      "image": "/placeholder.svg",
-      "socials": { "linkedin": "", "website": "" }
+      "image": "/team/nipun-sinha.webp",
+      "socials": {
+        "linkedin": "",
+        "website": ""
+      }
     },
     {
       "name": "Aayush Arya",
       "post": "Executive Board",
       "role": "Technical Secretary",
-      "image": "/team/ayusharya.webp",
-      "socials": { "linkedin": "", "website": "" }
+      "image": "/team/aayush-arya.webp",
+      "socials": {
+        "linkedin": "",
+        "website": ""
+      }
     },
     {
       "name": "Vijay Kumar Das",
       "post": "Executive Board",
       "role": "Treasurer",
-      "image": "/team/vijay.webp",
-      "socials": { "linkedin": "", "website": "" }
+      "image": "/team/vijay-kumar-das.webp",
+      "socials": {
+        "linkedin": "",
+        "website": ""
+      }
     },
     {
       "name": "Kshitij Tiwari",
       "post": "Executive Board",
       "role": "Treasurer",
-      "image": "/team/kshitij.webp",
-      "socials": { "linkedin": "", "website": "" }
+      "image": "/team/kshitij-tiwari.webp",
+      "socials": {
+        "linkedin": "",
+        "website": ""
+      }
     }
   ],
   "coreTechnicalTeam": [
@@ -55,78 +76,111 @@
       "name": "Anushka Nandan",
       "post": "Core Technical Team",
       "role": "Publicity Head",
-      "image": "/team/anushka.webp",
-      "socials": { "linkedin": "", "website": "" }
+      "image": "/team/anushka-nandan.webp",
+      "socials": {
+        "linkedin": "",
+        "website": ""
+      }
     },
     {
       "name": "Ritu Raj",
       "post": "Core Technical Team",
       "role": "Publicity Head",
-      "image": "/team/rituraj.webp",
-      "socials": { "linkedin": "", "website": "" }
+      "image": "/team/ritu-raj.webp",
+      "socials": {
+        "linkedin": "",
+        "website": ""
+      }
     },
     {
       "name": "Khushboo",
       "post": "Core Technical Team",
       "role": "Social Media Outreach",
       "image": "/team/khushboo.webp",
-      "socials": { "linkedin": "", "website": "" }
+      "socials": {
+        "linkedin": "",
+        "website": ""
+      }
     },
     {
       "name": "Ram Kishan Mehta",
       "post": "Core Technical Team",
       "role": "Social Media Outreach",
-      "image": "/team/ram.webp",
-      "socials": { "linkedin": "", "website": "" }
+      "image": "/team/ram-kishan-mehta.webp",
+      "socials": {
+        "linkedin": "",
+        "website": ""
+      }
     },
     {
       "name": "Anjali Kumari",
       "post": "Core Technical Team",
       "role": "Designing Head",
-      "image": "/team/anjalicsejunior.webp",
-      "socials": { "linkedin": "", "website": "" }
+      "image": "/team/anjali-kumari.webp",
+      "socials": {
+        "linkedin": "",
+        "website": ""
+      }
     },
     {
       "name": "Shreyanka Basak",
       "post": "Core Technical Team",
       "role": "Designing Head",
-      "image": "/team/shreyanka.webp",
-      "socials": { "linkedin": "", "website": "" }
+      "image": "/team/shreyanka-basak.webp",
+      "socials": {
+        "linkedin": "",
+        "website": ""
+      }
     },
     {
       "name": "Aditya Kumar",
       "post": "Core Technical Team",
       "role": "Event Head",
-      "image": "/team/adityakumar.webp",
-      "socials": { "linkedin": "", "website": "" }
+      "image": "/team/aditya-kumar.webp",
+      "socials": {
+        "linkedin": "",
+        "website": ""
+      }
     },
     {
       "name": "Aditi Maharor",
       "post": "Core Technical Team",
       "role": "Event Head",
-      "image": "/team/aditimaharor.webp",
-      "socials": { "linkedin": "", "website": "" }
+      "image": "/team/aditi-maharor.webp",
+      "socials": {
+        "linkedin": "",
+        "website": ""
+      }
     },
     {
       "name": "Prisha Raj",
       "post": "Core Technical Team",
       "role": "Coding & Innovation Head",
-      "image": "/team/prisha.webp",
-      "socials": { "linkedin": "", "website": "" }
+      "image": "/team/prisha-raj.webp",
+      "socials": {
+        "linkedin": "",
+        "website": ""
+      }
     },
     {
       "name": "Daya Shankar",
       "post": "Core Technical Team",
       "role": "Coding & Innovation Head",
-      "image": "/team/dayashankar.webp",
-      "socials": { "linkedin": "", "website": "" }
+      "image": "/team/daya-shankar.webp",
+      "socials": {
+        "linkedin": "",
+        "website": ""
+      }
     },
     {
-      "name": "Krish",
+      "name": "Krish Agarwal",
       "post": "Core Technical Team",
       "role": "Coding & Innovation Head",
-      "image": "/team/krish.webp",
-      "socials": { "linkedin": "", "website": "" }
+      "image": "/team/krish-agarwal.webp",
+      "socials": {
+        "linkedin": "",
+        "website": ""
+      }
     }
   ],
   "members": [
@@ -134,50 +188,61 @@
       "name": "Ashutosh Kumar",
       "post": "Member",
       "role": "Member",
-      "image": "/team/ashutosh.webp",
-      "socials": { "linkedin": "", "website": "" }
+      "image": "/team/ashutosh-kumar.webp",
+      "socials": {
+        "linkedin": "",
+        "website": ""
+      }
     },
     {
       "name": "Raj Yash Gupta",
       "post": "Member",
       "role": "Member",
-      "image": "/team/rajyash.webp",
-      "socials": { "linkedin": "", "website": "" }
-    },
-    {
-      "name": "Kanan Kotwani",
-      "post": "Member",
-      "role": "Member",
-      "image": "/team/kanan.webp",
-      "socials": { "linkedin": "", "website": "" }
+      "image": "/team/raj-yash-gupta.webp",
+      "socials": {
+        "linkedin": "",
+        "website": ""
+      }
     },
     {
       "name": "Sahil Suman",
       "post": "Member",
       "role": "Member",
-      "image": "/team/sahil.webp",
-      "socials": { "linkedin": "", "website": "" }
+      "image": "/team/sahil-suman.webp",
+      "socials": {
+        "linkedin": "",
+        "website": ""
+      }
     },
     {
       "name": "Soumya Sharma",
       "post": "Member",
       "role": "Member",
-      "image": "/team/soumya.webp",
-      "socials": { "linkedin": "", "website": "" }
+      "image": "/team/soumya-sharma.webp",
+      "socials": {
+        "linkedin": "",
+        "website": ""
+      }
     },
     {
       "name": "Shivam Singh",
       "post": "Member",
       "role": "Member",
-      "image": "/team/shivamsingh.webp",
-      "socials": { "linkedin": "", "website": "" }
+      "image": "/team/shivam-singh.webp",
+      "socials": {
+        "linkedin": "",
+        "website": ""
+      }
     },
     {
       "name": "Abhishek Bharti",
       "post": "Member",
       "role": "Member",
-      "image": "/team/abhishekbharti.webp",
-      "socials": { "linkedin": "", "website": "" }
+      "image": "/team/abhishek-bharti.webp",
+      "socials": {
+        "linkedin": "",
+        "website": ""
+      }
     }
   ]
 }
