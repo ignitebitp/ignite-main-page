@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "npx prisma generate --schema=../backend/prisma/schema.prisma && next build",
     "start": "next start",
     "vite:dev": "vite",
     "vite:build": "vite build"

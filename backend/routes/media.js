@@ -30,12 +30,15 @@ router.get('/', async (req, res) => {
       return res.status(403).json({ error: 'Cross-site access denied' });
     }
 
-    const host = req.headers.host;
+    const rawHosts = [req.headers.host, req.headers['x-forwarded-host']]
+      .filter(Boolean)
+      .flatMap((h) => String(h).split(',').map((s) => s.trim().toLowerCase()))
+      .filter(Boolean);
     const referer = req.headers.referer || req.headers.origin;
-    if (referer && host) {
+    if (referer && rawHosts.length > 0) {
       try {
-        const refHost = new URL(referer).host;
-        if (refHost !== host) {
+        const refHost = new URL(referer).host.toLowerCase();
+        if (!rawHosts.includes(refHost)) {
           return res.status(403).json({ error: 'Origin mismatch' });
         }
       } catch {

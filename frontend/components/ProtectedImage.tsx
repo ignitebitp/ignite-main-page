@@ -96,12 +96,13 @@ const ProtectedImage: React.FC<ProtectedImageProps> = ({ src, alt, className = '
           credentials: 'same-origin',
           cache: 'no-store',
         });
-        if (!res.ok) throw new Error('Media fetch failed');
+        if (!res.ok) throw new Error(`Media fetch failed (${res.status})`);
         const blob = await res.blob();
         if (!active) return;
         objectUrl = URL.createObjectURL(blob);
         drawToCanvas(objectUrl, true);
-      } catch {
+      } catch (err) {
+        console.warn('ProtectedImage fallback to placeholder for:', targetSrc, err);
         if (active) {
           drawToCanvas('/placeholder.svg', false);
         }
