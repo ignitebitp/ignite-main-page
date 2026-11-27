@@ -60,20 +60,6 @@
   --terminal-green: #34d399;
 }
 
-html.light {
-  --canvas-bg: #f8f9fa;
-  --secondary-bg: #ffffff;
-  --surface-card: rgba(255, 255, 255, 0.88);
-  --card-border-top: rgba(255, 255, 255, 0.9);
-  --card-border-side: rgba(0, 0, 0, 0.08);
-  --card-border-bottom: rgba(0, 0, 0, 0.14);
-  --text-main: #0f1419;
-  --text-muted: #4b5563;
-  --primary-accent: #d8683e;
-  --primary-glow: rgba(216, 104, 62, 0.35);
-  --primary-dim: rgba(216, 104, 62, 0.12);
-}
-
 /* Base Styles */
 body {
   margin: 0;
@@ -207,15 +193,6 @@ button:active:not(:disabled),
   border-right: 1px solid rgba(255, 255, 255, 0.12);
   border-bottom: 1px solid rgba(0, 0, 0, 0.65);
   box-shadow: 0 12px 36px -8px rgba(0, 0, 0, 0.85), inset 0 1px 0 rgba(255, 255, 255, 0.2);
-}
-
-html.light .glass-island-nav {
-  background: rgba(255, 255, 255, 0.88);
-  border-top: 1.5px solid rgba(255, 255, 255, 0.95);
-  border-left: 1px solid rgba(0, 0, 0, 0.08);
-  border-right: 1px solid rgba(0, 0, 0, 0.08);
-  border-bottom: 1px solid rgba(0, 0, 0, 0.15);
-  box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.15);
 }
 
 /* Specular Button Highlights */

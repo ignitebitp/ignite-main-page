@@ -1,48 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from '../lib/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Menu, X, Sun, Moon, Sparkles, User, ArrowUpRight } from 'lucide-react';
+import { Menu, X, Sparkles, User, ArrowUpRight } from 'lucide-react';
 import { api } from '../lib/api';
 
 const Navbar: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
-  const [isDark, setIsDark] = useState(true);
   const [hoveredPath, setHoveredPath] = useState<string | null>(null);
   const [featuredEvents, setFeaturedEvents] = useState<any[]>([]);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const location = useLocation();
 
   if (location.pathname === '/exam') return null; // Hide Navbar on exam page
-
-  // Initialize theme from HTML or localStorage
-  useEffect(() => {
-    const savedTheme = localStorage.getItem('ignite_theme');
-    const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-    const initialDark = savedTheme ? savedTheme === 'dark' : prefersDark || true;
-    setIsDark(initialDark);
-    if (initialDark) {
-      document.documentElement.classList.add('dark');
-      document.documentElement.classList.remove('light');
-    } else {
-      document.documentElement.classList.remove('dark');
-      document.documentElement.classList.add('light');
-    }
-  }, []);
-
-  const toggleTheme = () => {
-    const nextDark = !isDark;
-    setIsDark(nextDark);
-    if (nextDark) {
-      document.documentElement.classList.add('dark');
-      document.documentElement.classList.remove('light');
-      localStorage.setItem('ignite_theme', 'dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-      document.documentElement.classList.add('light');
-      localStorage.setItem('ignite_theme', 'light');
-    }
-  };
 
   useEffect(() => {
     api.getAllEvents().then(events => {
@@ -176,7 +146,7 @@ const Navbar: React.FC = () => {
             })}
           </nav>
 
-          {/* Right Actions: Register CTA + Dark/Light Toggle + Mobile Trigger */}
+          {/* Right Actions: Register CTA + Mobile Trigger */}
           <div className="flex items-center space-x-2 md:space-x-3">
             {/* Primary Action Button (Cyber Violet Pill) */}
             <Link
@@ -204,35 +174,6 @@ const Navbar: React.FC = () => {
                 Login
               </Link>
             )}
-
-            {/* Dark / Light Mode Switch (44px touch hit slop) */}
-            <button
-              onClick={toggleTheme}
-              aria-label="Toggle theme mode"
-              className="relative w-9 h-9 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 flex items-center justify-center text-gray-300 hover:text-primary transition-all duration-200 before:content-[''] before:absolute before:-inset-1.5"
-            >
-              <AnimatePresence mode="wait" initial={false}>
-                {isDark ? (
-                  <motion.div
-                    key="sun"
-                    initial={{ opacity: 0, scale: 0.8, filter: 'blur(4px)' }}
-                    animate={{ opacity: 1, scale: 1, filter: 'blur(0px)', transition: { duration: 0.2, ease: 'easeOut' } }}
-                    exit={{ opacity: 0, scale: 0.8, filter: 'blur(4px)', transition: { duration: 0.16, ease: 'easeIn' } }}
-                  >
-                    <Sun className="w-4 h-4 text-amber-400" />
-                  </motion.div>
-                ) : (
-                  <motion.div
-                    key="moon"
-                    initial={{ opacity: 0, scale: 0.8, filter: 'blur(4px)' }}
-                    animate={{ opacity: 1, scale: 1, filter: 'blur(0px)', transition: { duration: 0.2, ease: 'easeOut' } }}
-                    exit={{ opacity: 0, scale: 0.8, filter: 'blur(4px)', transition: { duration: 0.16, ease: 'easeIn' } }}
-                  >
-                    <Moon className="w-4 h-4 text-indigo-400" />
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </button>
 
             {/* Mobile Hamburger Trigger (44px touch hit slop) */}
             <button

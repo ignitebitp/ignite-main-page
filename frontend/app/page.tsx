@@ -241,10 +241,7 @@ const Home: React.FC = () => {
                     </p>
                   </div>
 
-                  <div className="pt-6 mt-6 border-t border-white/5 flex items-center text-xs font-mono-code text-gray-400 group-hover:text-primary transition-colors">
-                    <span>EXPLORE SYLLABUS</span>
-                    <ArrowUpRight className="w-3.5 h-3.5 ml-1 transition-transform group-hover:translate-x-1 group-hover:-translate-y-0.5" />
-                  </div>
+
                 </div>
               </SectionWrapper>
             ))}
