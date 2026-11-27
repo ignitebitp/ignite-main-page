@@ -4,6 +4,7 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { Linkedin, Globe, Sparkles } from 'lucide-react';
 import SectionWrapper from '@/components/SectionWrapper';
+import ProtectedImage from '@/components/ProtectedImage';
 import { TeamMember } from '@/types';
 import { TEAM_SECTION } from '@/data';
 
@@ -15,8 +16,6 @@ const TeamCard: React.FC<{ member: TeamMember; isExecutive?: boolean }> = ({
 }) => {
   const cardWidthClass = isExecutive ? 'w-[300px]' : 'w-[210px]';
   const imgBoxClass = isExecutive ? 'w-[300px] h-[400px]' : 'w-[210px] h-[280px]';
-  const imgWidth = isExecutive ? 300 : 210;
-  const imgHeight = isExecutive ? 400 : 280;
   const linkedinUrl = hasValidLink(member.socials?.linkedin) ? member.socials.linkedin!.trim() : '';
   const websiteUrl = hasValidLink(member.socials?.website) ? member.socials.website!.trim() : '';
   const hasAnyLink = Boolean(linkedinUrl || websiteUrl);
@@ -28,15 +27,12 @@ const TeamCard: React.FC<{ member: TeamMember; isExecutive?: boolean }> = ({
       className="relative group flex justify-center flex-shrink-0"
     >
       <div className={`glass-card box-content rounded-2xl overflow-hidden flex flex-col border-t-[1.5px] border-t-white/40 group-hover:border-primary/50 transition-all duration-300 ${cardWidthClass} flex-shrink-0 shadow-lg`}>
-        {/* Image placeholder: exactly 300x400 for Executive Board, 200x250 for others */}
+        {/* Image placeholder: exactly 300x400 for Executive Board, 210x280 for others */}
         <div className={`relative ${imgBoxClass} overflow-hidden bg-[#0e1319] flex-shrink-0`}>
-          <img
+          <ProtectedImage
             src={member.image || '/placeholder.svg'}
             alt={member.name}
-            width={imgWidth}
-            height={imgHeight}
-            onError={(e: any) => { e.currentTarget.src = '/placeholder.svg'; }}
-            className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105 select-none"
+            className="transition-transform duration-700 group-hover:scale-105"
           />
 
           {/* Gradient overlay */}

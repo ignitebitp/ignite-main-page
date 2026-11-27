@@ -43,3 +43,7 @@ backend/uploads/*
 !backend/uploads/templates
 server/.env
 server/uploads/
+
+# Protected team & alumni images (stored in DB, kept locally only)
+frontend/public/team/
+frontend/public/alumni/

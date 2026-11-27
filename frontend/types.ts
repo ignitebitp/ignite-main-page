@@ -12,7 +12,6 @@ export interface TeamMember {
 export interface AlumniMember {
   name: string;
   batch: string;
-  role?: string;
   image: string;
   linkedin?: string;
   website?: string;

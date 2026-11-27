@@ -3,6 +3,7 @@
 import React, { useMemo, useState } from 'react';
 import { motion } from 'framer-motion';
 import SectionWrapper from '@/components/SectionWrapper';
+import ProtectedImage from '@/components/ProtectedImage';
 import { ALUMNI_SECTION } from '@/data';
 import { AlumniMember } from '@/types';
 import { GraduationCap, Linkedin, Globe, Search, Filter } from 'lucide-react';
@@ -200,13 +201,9 @@ const Alumni: React.FC = () => {
                   <div className="glass-card p-4 sm:p-5 rounded-2xl flex items-center justify-between gap-3 border-t-[1.5px] border-t-white/35 group hover:border-primary/40 transition-all duration-300 h-full">
                     <div className="flex items-center space-x-3.5 sm:space-x-4 min-w-0">
                       <div className="relative w-16 h-16 sm:w-20 sm:h-20 rounded-xl overflow-hidden flex-shrink-0 bg-[#0e1319] border border-primary/40 group-hover:border-primary transition-colors">
-                        <img
-                          src={encodeURI(alum.image || '/placeholder.svg')}
+                        <ProtectedImage
+                          src={alum.image || '/placeholder.svg'}
                           alt={alum.name}
-                          onError={(e: any) => {
-                            e.currentTarget.src = '/placeholder.svg';
-                          }}
-                          className="w-full h-full object-cover"
                         />
 
                         {hasAnyLink && (
@@ -244,9 +241,7 @@ const Alumni: React.FC = () => {
 
                         <div className="flex items-center gap-1.5 text-primary text-xs font-mono-code mb-1">
                           <GraduationCap size={13} className="flex-shrink-0" />
-                          <span className="truncate">
-                            {alum.role ? `${alum.role} · Alumnus` : 'IGNITE Alumnus'}
-                          </span>
+                          <span className="truncate">IGNITE Alumnus</span>
                         </div>
 
                         <span className="inline-block px-2 py-0.5 bg-white/5 rounded-full text-[10px] font-mono-code text-gray-400 border border-white/5">

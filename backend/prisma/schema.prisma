@@ -192,3 +192,16 @@ model TeamMember {
 
   @@map("team_members")
 }
+
+// ================= SECURED MEDIA ASSETS =================
+model MediaAsset {
+  id        String   @id @default(cuid())
+  key       String   @unique // e.g. "team/rajeev-raj.webp", "alumni/2k23/aditya-agarwal.webp"
+  mimeType  String
+  data      Bytes
+  size      Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("media_assets")
+}
