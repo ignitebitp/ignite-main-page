@@ -19,10 +19,12 @@ import adminUsersRoutes from './routes/adminUsers.js';
 import uploadRoutes from './routes/upload.js';
 import mediaRoutes from './routes/media.js';
 
-dotenv.config();
-
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+
+// Load env from repo root and backend/.env regardless of cwd (e.g. when invoked from frontend/)
+dotenv.config({ path: path.resolve(__dirname, '../.env') });
+dotenv.config({ path: path.resolve(__dirname, '.env') });
 
 const app = express();
 

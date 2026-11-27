@@ -2,6 +2,8 @@
 const nextConfig = {
   reactStrictMode: false,
   serverExternalPackages: [
+    '@prisma/client',
+    'prisma',
     'mongoose',
     'mongodb',
     'bcryptjs',
