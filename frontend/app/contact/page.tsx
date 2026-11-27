@@ -45,8 +45,8 @@ const Contact: React.FC = () => {
                 </div>
                 <div>
                   <h3 className="text-sm font-mono-code uppercase tracking-wider text-gray-300">Voice Line</h3>
-                  <p className="text-base font-semibold text-white font-mono-code">+91 9386881353</p>
-                  <p className="text-base font-semibold text-white font-mono-code">+91 9508664027</p>
+                  <p className="text-base font-semibold text-white font-mono-code">+91 9608006152</p>
+                  <p className="text-base font-semibold text-white font-mono-code">+91 7909040346</p>
                 </div>
               </div>
 

@@ -1,0 +1,46 @@
+{
+  "clubName": "IGNITE",
+  "societySubtitle": "Technical Innovation Society",
+  "established": "2021",
+  "campus": "BIT Mesra, Patna Campus",
+  "eyebrow": "BIT MESRA TECHNICAL SOCIETY // EST. 2021",
+  "headline": "Building the Next Generation of Engineers.",
+  "shortDescription": "Fostering innovation, collaborative development, and engineering excellence. We build the future, one line of code at a time.",
+  "heroDescription": "The premier Tech Society of BIT Mesra — fostering innovation, coding excellence, and technical leadership for the next generation of builders and security practitioners.",
+  "mission": {
+    "title": "Our Mission",
+    "summary": "Empowering students to bridge theory and real-world engineering through hands-on workshops, hackathons, open-source collaboration, and peer mentorship."
+  },
+  "vision": {
+    "title": "Our Vision",
+    "summary": "Demystifying technology from kernel to cloud — cultivating a campus culture where curiosity meets raw execution and technical leadership."
+  },
+  "story": [
+    "Founded in 2021 at BIT Mesra Patna Campus, IGNITE started with a focused group of student builders who wanted a space beyond classroom lectures to ship real software, explore cybersecurity, and prototype hardware systems.",
+    "Today, IGNITE brings together developers, designers, competitive programmers, and researchers across batches — hosting flagship hackathons like Inginiux and Xordium, technical labs, and collaborative guild projects."
+  ],
+  "stats": [
+    { "label": "Total Members", "value": "200+", "tag": "GROWING ROSTER" },
+    { "label": "Active Innovators", "value": "85+", "tag": "CORE CONTRIBUTORS" },
+    { "label": "Events Hosted", "value": "50+", "tag": "HACKATHONS & LABS" },
+    { "label": "Years of Excellence", "value": "4+", "tag": "CAMPUS GUILD" }
+  ],
+  "pillars": [
+    {
+      "title": "Development & Engineering",
+      "description": "Intensive workshops on Web, Cloud, AI, and distributed software systems using modern industry stacks.",
+      "badge": "FULL-STACK // DEV"
+    },
+    {
+      "title": "Hardware & IoT Systems",
+      "description": "Hands-on embedded prototyping with microcontrollers, sensor matrices, Arduino, and edge compute nodes.",
+      "badge": "EMBEDDED // IOT"
+    },
+    {
+      "title": "Guild & Community",
+      "description": "Peer mentorship, tech speaker sessions, inter-collegiate hackathons, and high-impact career pathways.",
+      "badge": "COLLABORATIVE // GUILD"
+    }
+  ]
+}
+

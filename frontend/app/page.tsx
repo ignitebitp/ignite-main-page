@@ -7,6 +7,7 @@ import SectionWrapper from '@/components/SectionWrapper';
 import BinaryRain from '@/components/BinaryRain';
 import InteractiveTerminal from '@/components/InteractiveTerminal';
 import { Link } from '@/lib/navigation';
+import { ABOUT_US } from '@/data';
 
 const Home: React.FC = () => {
   return (
@@ -30,7 +31,7 @@ const Home: React.FC = () => {
               >
                 <div className="w-7 h-[2px] bg-primary" />
                 <span className="font-mono-code text-xs uppercase tracking-[0.25em] text-primary font-semibold">
-                  BIT MESRA TECHNICAL SOCIETY // EST. 2021
+                  {ABOUT_US.eyebrow}
                 </span>
               </motion.div>
 
@@ -138,10 +139,10 @@ const Home: React.FC = () => {
         <div className="container mx-auto px-6 relative z-10">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
             {[
-              { label: 'Total Members', value: '200+', tag: 'GROWING ROSTER', icon: Users, color: 'text-primary' },
-              { label: 'Active Innovators', value: '85+', tag: 'CORE CONTRIBUTORS', icon: Zap, color: 'text-amber-400' },
-              { label: 'Events Hosted', value: '50+', tag: 'HACKATHONS & LABS', icon: Code, color: 'text-cyber-green' },
-              { label: 'Years of Excellence', value: '4+', tag: 'CAMPUS GUILD', icon: Rocket, color: 'text-purple-400' },
+              { ...ABOUT_US.stats[0], icon: Users, color: 'text-primary' },
+              { ...ABOUT_US.stats[1], icon: Zap, color: 'text-amber-400' },
+              { ...ABOUT_US.stats[2], icon: Code, color: 'text-cyber-green' },
+              { ...ABOUT_US.stats[3], icon: Rocket, color: 'text-purple-400' },
             ].map((stat, index) => (
               <SectionWrapper key={index} delay={index * 0.03}>
                 <div className="glass-card p-6 rounded-2xl relative group overflow-hidden border-t-[1.5px] border-t-white/30">
@@ -181,10 +182,16 @@ const Home: React.FC = () => {
               What We Do.{' '}
               <span className="font-editorial text-primary font-normal">From Kernel to Cloud.</span>
             </h2>
-            <p className="text-base md:text-lg text-gray-400 max-w-2xl leading-relaxed">
-              We provide a structured launchpad for students to explore, experiment, and engineer.
-              From competitive coding and security CTFs to full-stack IoT and AI systems.
+            <p className="text-base md:text-lg text-gray-400 max-w-2xl leading-relaxed mb-4">
+              {ABOUT_US.mission.summary}
             </p>
+            <Link
+              to="/about"
+              className="inline-flex items-center gap-1.5 text-xs font-mono-code text-primary hover:underline"
+            >
+              <span>Read more about IGNITE</span>
+              <ArrowUpRight className="w-3.5 h-3.5" />
+            </Link>
           </SectionWrapper>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">

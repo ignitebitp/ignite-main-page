@@ -1,6 +1,7 @@
 import React from 'react';
 import { Github, Linkedin, Instagram, Mail, PhoneCall, Radio, Terminal, ExternalLink, ShieldCheck } from 'lucide-react';
 import { Link } from '../lib/navigation';
+import { ABOUT_US } from '../data';
 
 const Footer: React.FC = () => {
   return (
@@ -28,13 +29,13 @@ const Footer: React.FC = () => {
                   IGNITE
                 </span>
                 <span className="text-[10px] font-mono-code text-primary tracking-widest uppercase">
-                  TECHNICAL INNOVATION SOCIETY
+                  {ABOUT_US.societySubtitle}
                 </span>
               </div>
             </div>
 
             <p className="text-gray-400 text-sm leading-relaxed max-w-sm">
-              Fostering innovation, collaborative development, and engineering excellence. We build the future, one line of code at a time.
+              {ABOUT_US.shortDescription}
             </p>
 
             {/* Institutional Affiliation Badge & Real-time Status Pill */}
@@ -57,6 +58,11 @@ const Footer: React.FC = () => {
               // EXPLORE
             </h4>
             <ul className="space-y-2.5 text-sm text-gray-400">
+              <li>
+                <Link to="/about" className="hover:text-white hover:translate-x-1 inline-block transition-all">
+                  About Us
+                </Link>
+              </li>
               <li>
                 <Link to="/team" className="hover:text-white hover:translate-x-1 inline-block transition-all">
                   Our Team
@@ -122,11 +128,11 @@ const Footer: React.FC = () => {
               </li>
               <li className="flex items-center space-x-2">
                 <PhoneCall className="w-4 h-4 text-primary" />
-                <span className="font-mono-code text-xs">+91 9386881353</span>
+                <span className="font-mono-code text-xs">+91 9608006152</span>
               </li>
               <li className="flex items-center space-x-2">
                 <PhoneCall className="w-4 h-4 text-primary" />
-                <span className="font-mono-code text-xs">+91 9508664027</span>
+                <span className="font-mono-code text-xs">+91 7909040346</span>
               </li>
             </ul>
 
