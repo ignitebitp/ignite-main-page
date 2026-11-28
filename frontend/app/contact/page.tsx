@@ -1,11 +1,31 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Mail, MapPin, Phone, Send, Terminal, Sparkles } from 'lucide-react';
+import { Mail, MapPin, Phone, Send, Terminal, CheckCircle2 } from 'lucide-react';
 import SectionWrapper from '@/components/SectionWrapper';
+import { api } from '@/lib/api';
 
 const Contact: React.FC = () => {
+  const [form, setForm] = useState({ name: '', email: '', subject: '', message: '' });
+  const [loading, setLoading] = useState(false);
+  const [sent, setSent] = useState(false);
+  const [error, setError] = useState('');
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    setError('');
+    try {
+      await api.submitContactMessage(form);
+      setSent(true);
+      setForm({ name: '', email: '', subject: '', message: '' });
+    } catch (err: any) {
+      setError(err.message || 'Failed to send message.');
+    } finally {
+      setLoading(false);
+    }
+  };
   return (
     <div className="pt-32 pb-24 min-h-screen">
       <div className="container mx-auto px-6">
@@ -77,55 +97,89 @@ const Contact: React.FC = () => {
                 </h2>
               </div>
 
-              <form className="space-y-5" onSubmit={(e) => e.preventDefault()}>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+              {sent ? (
+                <div className="py-10 text-center space-y-4">
+                  <div className="w-16 h-16 bg-cyber-green/10 border border-cyber-green/30 rounded-full flex items-center justify-center mx-auto animate-success-pulse">
+                    <CheckCircle2 className="w-8 h-8 text-cyber-green" />
+                  </div>
+                  <h3 className="text-xl font-display font-bold text-white">Message Transmitted</h3>
+                  <p className="text-sm text-gray-400">
+                    Your message has been saved and emailed to ignite@bitmesra.ac.in.
+                  </p>
+                  <button
+                    type="button"
+                    onClick={() => setSent(false)}
+                    className="btn-cyber-secondary px-6 py-2.5 rounded-full text-sm font-medium"
+                  >
+                    Send Another Message
+                  </button>
+                </div>
+              ) : (
+                <form className="space-y-5" onSubmit={handleSubmit}>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                    <div>
+                      <label className="block text-xs font-mono-code text-gray-400 mb-2">Name *</label>
+                      <input
+                        type="text"
+                        required
+                        value={form.name}
+                        onChange={e => setForm({ ...form, name: e.target.value })}
+                        placeholder="Jane Doe"
+                        className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:border-primary outline-none text-sm transition-colors"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-mono-code text-gray-400 mb-2">Email Address *</label>
+                      <input
+                        type="email"
+                        required
+                        value={form.email}
+                        onChange={e => setForm({ ...form, email: e.target.value })}
+                        placeholder="jane@example.com"
+                        className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:border-primary outline-none text-sm transition-colors"
+                      />
+                    </div>
+                  </div>
+
                   <div>
-                    <label className="block text-xs font-mono-code text-gray-400 mb-2">Name *</label>
+                    <label className="block text-xs font-mono-code text-gray-400 mb-2">Subject</label>
                     <input
                       type="text"
-                      required
-                      placeholder="Jane Doe"
+                      value={form.subject}
+                      onChange={e => setForm({ ...form, subject: e.target.value })}
+                      placeholder="Sponsorship / Collaboration / Query"
                       className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:border-primary outline-none text-sm transition-colors"
                     />
                   </div>
+
                   <div>
-                    <label className="block text-xs font-mono-code text-gray-400 mb-2">Email Address *</label>
-                    <input
-                      type="email"
+                    <label className="block text-xs font-mono-code text-gray-400 mb-2">Message Content *</label>
+                    <textarea
+                      rows={4}
                       required
-                      placeholder="jane@example.com"
-                      className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:border-primary outline-none text-sm transition-colors"
+                      value={form.message}
+                      onChange={e => setForm({ ...form, message: e.target.value })}
+                      placeholder="Describe your query or collaboration idea..."
+                      className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:border-primary outline-none text-sm transition-colors resize-none"
                     />
                   </div>
-                </div>
 
-                <div>
-                  <label className="block text-xs font-mono-code text-gray-400 mb-2">Subject</label>
-                  <input
-                    type="text"
-                    placeholder="Sponsorship / Collaboration / Query"
-                    className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:border-primary outline-none text-sm transition-colors"
-                  />
-                </div>
+                  {error && (
+                    <p className="text-xs font-mono-code text-cyber-red bg-cyber-red/10 border border-cyber-red/20 p-3 rounded-xl">
+                      {error}
+                    </p>
+                  )}
 
-                <div>
-                  <label className="block text-xs font-mono-code text-gray-400 mb-2">Message Content *</label>
-                  <textarea
-                    rows={4}
-                    required
-                    placeholder="Describe your query or collaboration idea..."
-                    className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:border-primary outline-none text-sm transition-colors resize-none"
-                  />
-                </div>
-
-                <button
-                  type="submit"
-                  className="w-full btn-cyber-primary py-3.5 rounded-xl font-bold flex items-center justify-center gap-2"
-                >
-                  <Send className="w-4 h-4" />
-                  <span>Transmit Message</span>
-                </button>
-              </form>
+                  <button
+                    type="submit"
+                    disabled={loading}
+                    className="w-full btn-cyber-primary py-3.5 rounded-xl font-bold flex items-center justify-center gap-2 disabled:opacity-50"
+                  >
+                    <Send className="w-4 h-4" />
+                    <span>{loading ? 'Transmitting...' : 'Transmit Message'}</span>
+                  </button>
+                </form>
+              )}
             </div>
           </SectionWrapper>
         </div>

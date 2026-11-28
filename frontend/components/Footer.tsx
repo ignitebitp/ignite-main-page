@@ -104,8 +104,8 @@ const Footer: React.FC = () => {
                 </Link>
               </li>
               <li>
-                <Link to="/register" className="hover:text-white hover:translate-x-1 inline-block transition-all">
-                  Student Registration
+                <Link to="/events" className="hover:text-white hover:translate-x-1 inline-block transition-all">
+                  Event Registration
                 </Link>
               </li>
             </ul>

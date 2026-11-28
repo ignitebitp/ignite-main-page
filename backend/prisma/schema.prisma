@@ -15,7 +15,10 @@ model User {
   id                   String    @id @default(cuid())
   name                 String
   email                String    @unique
-  password             String
+  password             String?
+  role                 String    @default("moderator") // 'owner' | 'admin' | 'moderator'
+  inviteToken          String?   @unique
+  inviteExpires        DateTime?
   phone                String?
   college              String?
   branch               String?
@@ -29,6 +32,22 @@ model User {
   updatedAt            DateTime  @updatedAt
 
   @@map("users")
+}
+
+// ================= CONTACT & INTEREST MESSAGES =================
+model ContactMessage {
+  id        String   @id @default(cuid())
+  type      String   @default("contact") // 'contact' | 'interest'
+  name      String
+  email     String
+  phone     String?
+  branch    String?
+  batch     String?
+  subject   String?
+  message   String
+  createdAt DateTime @default(now())
+
+  @@map("contact_messages")
 }
 
 // ================= EVENTS & REGISTRATIONS =================

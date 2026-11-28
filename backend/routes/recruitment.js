@@ -104,6 +104,22 @@ router.post('/', async (req, res) => {
     sendEmail(application.email, 'IGNITE Recruitment: Application Received', emailHtml)
       .catch(err => console.error('Recruitment email failed:', err));
 
+    const adminNotifyHtml = `
+      <div style="font-family: Arial, sans-serif; color: #333; max-width: 600px; margin: 0 auto;">
+        <h2 style="color: #f97316;">New Recruitment Application — IGNITE</h2>
+        <p><strong>Name:</strong> ${application.name}</p>
+        <p><strong>Email:</strong> ${application.email}</p>
+        <p><strong>Phone:</strong> ${application.phone}</p>
+        <p><strong>Roll No:</strong> ${application.rollNo}</p>
+        <p><strong>Branch / Batch:</strong> ${application.branch} (${application.batch})</p>
+        <p><strong>Interests:</strong> ${application.interests.join(', ')}</p>
+        <p><strong>Why Join:</strong></p>
+        <div style="background: #f7f7f7; padding: 12px; border-radius: 8px; white-space: pre-wrap;">${application.whyJoin}</div>
+      </div>
+    `;
+    sendEmail('ignite@bitmesra.ac.in', `[Recruitment] ${application.name} (${application.rollNo})`, adminNotifyHtml)
+      .catch(err => console.error('Recruitment admin notification failed:', err));
+
     res.status(201).json({
       message: 'Application submitted successfully!',
       id: application.id,

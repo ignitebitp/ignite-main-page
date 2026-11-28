@@ -36,9 +36,18 @@ export const api = {
 
     // Auth
     login: (data: any) => api.request('/api/auth/login', { method: 'POST', body: JSON.stringify(data) }),
-    register: (data: any) => api.request('/api/auth/register', { method: 'POST', body: JSON.stringify(data) }),
-    verifyOTP: (data: { email: string, otp: string }) => api.request('/api/auth/verify-otp', { method: 'POST', body: JSON.stringify(data) }),
-    completeProfile: (data: any) => api.request('/api/auth/complete-profile', { method: 'POST', body: JSON.stringify(data) }),
+    changePassword: (data: { currentPassword: string; newPassword: string }) =>
+        api.request('/api/auth/change-password', { method: 'POST', body: JSON.stringify(data) }),
+    resetOwnerPassword: (data: { email: string; recoveryPassword: string; newPassword: string }) =>
+        api.request('/api/auth/reset-password', { method: 'POST', body: JSON.stringify(data) }),
+    getInviteStatus: (params: { token?: string; email?: string }) => {
+        const qs = new URLSearchParams();
+        if (params.token) qs.set('token', params.token);
+        if (params.email) qs.set('email', params.email);
+        return api.request(`/api/auth/invite-status?${qs.toString()}`);
+    },
+    setupPassword: (data: { token?: string; email?: string; password: string; name?: string }) =>
+        api.request('/api/auth/setup-password', { method: 'POST', body: JSON.stringify(data) }),
     verifyToken: () => api.request('/api/auth/verify'),
 
     // Recruitment
@@ -110,9 +119,22 @@ export const api = {
 
     // Admin Users & Mailer
     getAdminUsers: () => api.request('/api/admin/users'),
+    addAdminUser: (data: { email: string; name?: string; role: 'admin' | 'moderator' }) =>
+        api.request('/api/admin/users', { method: 'POST', body: JSON.stringify(data) }),
+    resetStaffPassword: (id: string, newPassword: string) =>
+        api.request(`/api/admin/users/${id}/reset-password`, { method: 'POST', body: JSON.stringify({ newPassword }) }),
+    deleteAdminUser: (id: string) => api.request(`/api/admin/users/${id}`, { method: 'DELETE' }),
     getResendStatus: () => api.request('/api/admin/resend-status'),
     sendAdminEmail: (data: { to?: string; subject: string; message?: string; html?: string; targetGroup?: string }) =>
         api.request('/api/admin/send-email', { method: 'POST', body: JSON.stringify(data) }),
+
+    // Contact & Student Interest (/register)
+    submitContactMessage: (data: { name: string; email: string; subject?: string; message: string }) =>
+        api.request('/api/contact', { method: 'POST', body: JSON.stringify(data) }),
+    submitStudentInterest: (data: { name: string; email: string; phone?: string; branch?: string; batch?: string; message?: string }) =>
+        api.request('/api/contact/interest', { method: 'POST', body: JSON.stringify(data) }),
+    getContactMessages: () => api.request('/api/contact'),
+    deleteContactMessage: (id: string) => api.request(`/api/contact/${id}`, { method: 'DELETE' }),
 
     // Upload
     uploadBlob: (formData: FormData) => api.request('/api/upload', { method: 'POST', body: formData }),

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useLocation } from '../lib/navigation';
+import { Link, useLocation, useNavigate } from '../lib/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Menu, X, Sparkles, User, ArrowUpRight } from 'lucide-react';
 import { api } from '../lib/api';
@@ -9,8 +9,11 @@ const Navbar: React.FC = () => {
   const [scrolled, setScrolled] = useState(false);
   const [hoveredPath, setHoveredPath] = useState<string | null>(null);
   const [featuredEvents, setFeaturedEvents] = useState<any[]>([]);
+  const [hasActiveEvents, setHasActiveEvents] = useState(false);
+  const [noEventsToast, setNoEventsToast] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const location = useLocation();
+  const navigate = useNavigate();
 
   if (location.pathname === '/exam') return null; // Hide Navbar on exam page
 
@@ -18,8 +21,22 @@ const Navbar: React.FC = () => {
     api.getAllEvents().then(events => {
       const featured = events.filter(e => e.type === 'mega' && e.isFeatured);
       setFeaturedEvents(featured);
+      const active = events.some(
+        e => e.isActive !== false && e.registrationsOpen !== false && e.status !== 'ended'
+      );
+      setHasActiveEvents(active);
     }).catch(() => { });
   }, []);
+
+  const handleRegisterClick = () => {
+    setIsOpen(false);
+    if (hasActiveEvents) {
+      navigate('/events');
+    } else {
+      setNoEventsToast(true);
+      setTimeout(() => setNoEventsToast(false), 3000);
+    }
+  };
 
   useEffect(() => {
     const handleScroll = () => {
@@ -148,22 +165,24 @@ const Navbar: React.FC = () => {
           {/* Right Actions: Register CTA + Mobile Trigger */}
           <div className="flex items-center space-x-2 md:space-x-3">
             {/* Primary Action Button (Cyber Violet Pill) */}
-            <Link
-              to={isLoggedIn ? '/profile' : '/register'}
-              className="btn-cyber-violet hidden sm:flex items-center gap-1.5 px-4 py-1.5 rounded-full text-xs md:text-sm font-medium tracking-wide shadow-md"
-            >
-              {isLoggedIn ? (
-                <>
-                  <User className="w-3.5 h-3.5" />
-                  <span>Profile</span>
-                </>
-              ) : (
-                <>
-                  <span>Register</span>
-                  <ArrowUpRight className="w-3.5 h-3.5 opacity-80" />
-                </>
-              )}
-            </Link>
+            {isLoggedIn ? (
+              <Link
+                to="/profile"
+                className="btn-cyber-violet hidden sm:flex items-center gap-1.5 px-4 py-1.5 rounded-full text-xs md:text-sm font-medium tracking-wide shadow-md"
+              >
+                <User className="w-3.5 h-3.5" />
+                <span>Profile</span>
+              </Link>
+            ) : (
+              <button
+                type="button"
+                onClick={handleRegisterClick}
+                className="btn-cyber-violet hidden sm:flex items-center gap-1.5 px-4 py-1.5 rounded-full text-xs md:text-sm font-medium tracking-wide shadow-md"
+              >
+                <span>Register</span>
+                <ArrowUpRight className="w-3.5 h-3.5 opacity-80" />
+              </button>
+            )}
 
             {!isLoggedIn && (
               <Link
@@ -234,14 +253,25 @@ const Navbar: React.FC = () => {
 
             {/* Mobile bottom actions */}
             <div className="pt-6 border-t border-white/10 space-y-3">
-              <Link
-                to={isLoggedIn ? '/profile' : '/register'}
-                onClick={() => setIsOpen(false)}
-                className="w-full btn-cyber-violet py-3 rounded-xl flex items-center justify-center gap-2 font-bold text-center"
-              >
-                {isLoggedIn ? 'Access Profile' : 'Register for Club'}
-                <ArrowUpRight className="w-4 h-4" />
-              </Link>
+              {isLoggedIn ? (
+                <Link
+                  to="/profile"
+                  onClick={() => setIsOpen(false)}
+                  className="w-full btn-cyber-violet py-3 rounded-xl flex items-center justify-center gap-2 font-bold text-center"
+                >
+                  Access Profile
+                  <ArrowUpRight className="w-4 h-4" />
+                </Link>
+              ) : (
+                <button
+                  type="button"
+                  onClick={handleRegisterClick}
+                  className="w-full btn-cyber-violet py-3 rounded-xl flex items-center justify-center gap-2 font-bold text-center"
+                >
+                  Register for Events
+                  <ArrowUpRight className="w-4 h-4" />
+                </button>
+              )}
               {!isLoggedIn && (
                 <Link
                   to="/login"
@@ -252,6 +282,22 @@ const Navbar: React.FC = () => {
                 </Link>
               )}
             </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* No Active Events Toast */}
+      <AnimatePresence>
+        {noEventsToast && (
+          <motion.div
+            initial={{ opacity: 0, y: 16, scale: 0.95 }}
+            animate={{ opacity: 1, y: 0, scale: 1, transition: { duration: 0.2, ease: [0.16, 1, 0.3, 1] } }}
+            exit={{ opacity: 0, y: 10, scale: 0.95, transition: { duration: 0.16, ease: 'easeIn' } }}
+            role="status"
+            className="fixed bottom-6 right-6 z-50 glass-card bg-[#0e1319]/95 border border-primary/40 px-5 py-3.5 rounded-2xl shadow-2xl flex items-center gap-3 text-sm font-mono-code text-white"
+          >
+            <span className="w-2 h-2 rounded-full bg-primary animate-pulse" />
+            <span>No active events right now.</span>
           </motion.div>
         )}
       </AnimatePresence>

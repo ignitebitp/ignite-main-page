@@ -18,6 +18,7 @@ import galleryRoutes from './routes/gallery.js';
 import adminUsersRoutes from './routes/adminUsers.js';
 import uploadRoutes from './routes/upload.js';
 import mediaRoutes from './routes/media.js';
+import contactRoutes from './routes/contact.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -59,6 +60,7 @@ app.use('/api/gallery', galleryRoutes);
 app.use('/api/admin', adminUsersRoutes);
 app.use('/api/upload', uploadRoutes);
 app.use('/api/media', mediaRoutes);
+app.use('/api/contact', contactRoutes);
 app.use('/share', shareRoutes);
 
 // Also handle /api/share in case of path prefix

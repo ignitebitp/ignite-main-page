@@ -58,7 +58,7 @@ const Home: React.FC = () => {
                 transition={{ duration: 0.5, delay: 0.14, ease: [0.16, 1, 0.3, 1] }}
                 className="text-base sm:text-lg md:text-xl text-gray-400 max-w-xl leading-relaxed"
               >
-                The premier Tech Society of <span className="text-white font-medium">BIT Mesra</span> — fostering innovation, coding excellence,
+                The premier Tech Society of <span className="text-white font-medium">BIT Patna</span> — fostering innovation, coding excellence,
                 and technical leadership for the next generation of builders and security practitioners.
               </motion.p>
 
@@ -70,7 +70,7 @@ const Home: React.FC = () => {
                 className="flex flex-wrap items-center gap-4 pt-2"
               >
                 <Link
-                  to="/register"
+                  to="/recruit"
                   className="btn-cyber-primary px-8 py-4 rounded-full flex items-center gap-2.5 text-base md:text-lg font-bold shadow-lg"
                 >
                   <span>Join the Community</span>
@@ -366,10 +366,10 @@ const Home: React.FC = () => {
 
               <div className="flex flex-wrap items-center justify-center gap-4">
                 <Link
-                  to="/register"
+                  to="/recruit"
                   className="btn-cyber-primary px-8 py-4 rounded-full text-base font-bold flex items-center gap-2 shadow-xl"
                 >
-                  <span>Register for Club</span>
+                  <span>Apply to Join</span>
                   <ArrowUpRight className="w-5 h-5 stroke-[2.5]" />
                 </Link>
 

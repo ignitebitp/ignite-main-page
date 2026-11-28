@@ -2,210 +2,268 @@ import express from 'express';
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
 import prisma from '../prisma.js';
-import { sendEmail } from '../lib/mailer.js';
 import auth from '../middleware/auth.js';
-import dotenv from 'dotenv';
-dotenv.config();
 
 const router = express.Router();
 const JWT_SECRET = process.env.JWT_SECRET || 'ignite_secret_jwt_key_2025';
 
-// POST /api/auth/register — register new student account
-router.post('/register', async (req, res) => {
-  try {
-    const { name, email, password } = req.body;
+const getEnvOwnerEmail = () => (process.env.OWNER_EMAIL || 'owner@igniteclub.tech').toLowerCase().trim();
+const getEnvOwnerPassword = () => (process.env.OWNER_PASSWORD || process.env.ADMIN_PASSWORD || 'ignite_owner_2025').trim();
 
-    if (!name || !email || !password) {
-      return res.status(400).json({ error: 'Name, email, and password are required' });
-    }
+/**
+ * Ensures the single Owner account exists in PostgreSQL, seeded from .env on first use.
+ * Once in the DB, password changes/resets mutate the DB row directly.
+ */
+async function ensureOwnerSeeded() {
+  const existingOwner = await prisma.user.findFirst({ where: { role: 'owner' } });
+  if (existingOwner) return existingOwner;
 
-    const cleanEmail = email.toLowerCase().trim();
+  const ownerEmail = getEnvOwnerEmail();
+  const hashedPassword = await bcrypt.hash(getEnvOwnerPassword(), 10);
 
-    // Check if user exists
-    const existingUser = await prisma.user.findUnique({
-      where: { email: cleanEmail },
-    });
-    if (existingUser) {
-      return res.status(400).json({ error: 'Email already exists' });
-    }
+  return await prisma.user.upsert({
+    where: { email: ownerEmail },
+    update: { role: 'owner', password: hashedPassword, isVerified: true },
+    create: {
+      name: 'IGNITE Owner',
+      email: ownerEmail,
+      role: 'owner',
+      password: hashedPassword,
+      isVerified: true,
+    },
+  });
+}
 
-    // Hash password
-    const hashedPassword = await bcrypt.hash(password, 10);
-
-    // Generate 6-digit OTP
-    const otp = Math.floor(100000 + Math.random() * 900000).toString();
-
-    const user = await prisma.user.create({
-      data: {
-        name: name.trim(),
-        email: cleanEmail,
-        password: hashedPassword,
-        verificationCode: otp,
-      },
-    });
-
-    // Send OTP Email
-    const emailHtml = `
-      <div style="font-family: sans-serif; color: #333; text-align: center; max-width: 500px; margin: 0 auto;">
-        <h2 style="color: #f97316;">Verify Your IGNITE Account</h2>
-        <p>Hi <strong>${name}</strong>,</p>
-        <p>Your verification code for IGNITE is:</p>
-        <div style="background: #f7f7f7; padding: 20px; text-align: center; border-radius: 10px; margin: 20px 0;">
-          <h1 style="letter-spacing: 5px; color: #f97316; margin: 0;">${otp}</h1>
-        </div>
-        <p>This code will expire in 10 minutes.</p>
-        <p>Keep burning bright!</p>
-        <br/>
-        <p>Best Regards,<br/><strong>Team IGNITE</strong></p>
-      </div>
-    `;
-
-    sendEmail(cleanEmail, 'Verify Your IGNITE Account', emailHtml)
-      .catch(err => console.error('Register OTP email error:', err));
-
-    res.status(201).json({
-      message: 'Registration successful. Please check your email for verification code.',
-      userId: user.id,
-    });
-  } catch (err) {
-    res.status(400).json({ error: err.message });
-  }
-});
-
-// POST /api/auth/verify-otp
-router.post('/verify-otp', async (req, res) => {
-  try {
-    const { email, otp } = req.body;
-    const cleanEmail = (email || '').toLowerCase().trim();
-
-    const user = await prisma.user.findUnique({
-      where: { email: cleanEmail },
-    });
-
-    if (!user) return res.status(404).json({ error: 'User not found' });
-    if (user.verificationCode !== otp) return res.status(400).json({ error: 'Invalid verification code' });
-
-    const updated = await prisma.user.update({
-      where: { id: user.id },
-      data: {
-        isVerified: true,
-        verificationCode: null,
-      },
-    });
-
-    const token = jwt.sign({ id: updated.id, role: 'user', email: updated.email }, JWT_SECRET, { expiresIn: '7d' });
-
-    res.json({
-      token,
-      user: { id: updated.id, _id: updated.id, name: updated.name, email: updated.email, isVerified: updated.isVerified },
-    });
-  } catch (err) {
-    res.status(400).json({ error: err.message });
-  }
-});
-
-// POST /api/auth/complete-profile
-router.post('/complete-profile', auth, async (req, res) => {
-  try {
-    const { phone, college, branch, batch } = req.body;
-
-    const user = await prisma.user.update({
-      where: { id: req.user.id },
-      data: {
-        phone: phone || null,
-        college: college || null,
-        branch: branch || null,
-        batch: batch || null,
-      },
-    });
-
-    res.json({
-      message: 'Profile completed successfully',
-      user: { id: user.id, _id: user.id, name: user.name, email: user.email, isVerified: user.isVerified },
-    });
-  } catch (err) {
-    res.status(400).json({ error: err.message });
-  }
-});
-
-// POST /api/auth/login — User & Admin Login
+// POST /api/auth/login — Owner, Admin, & Moderator Login (DB-backed)
 router.post('/login', async (req, res) => {
   try {
     const { email, password } = req.body;
     const cleanEmail = (email || '').toLowerCase().trim();
     const cleanPassword = (password || '').trim();
 
-    // 1. Default Admin Credentials Check (admin / admin)
-    const isAdminUser = cleanEmail === 'admin' || cleanEmail === 'admin@ignite.com' || cleanEmail === 'admin@ignitebitp.in';
-    const isDefaultAdminPass = cleanPassword === 'admin' || cleanPassword === (process.env.ADMIN_PASSWORD || 'admin');
-
-    if (isAdminUser && isDefaultAdminPass) {
-      const token = jwt.sign(
-        { id: 'admin-root', role: 'admin', email: 'admin@ignitebitp.in', name: 'IGNITE Administrator' },
-        JWT_SECRET,
-        { expiresIn: '7d' }
-      );
-      return res.json({
-        token,
-        role: 'admin',
-        user: { name: 'IGNITE Administrator', email: 'admin@ignitebitp.in', role: 'admin' },
-      });
+    if (!cleanEmail || !cleanPassword) {
+      return res.status(400).json({ error: 'Email and password are required' });
     }
 
-    // 2. Regular User Login from Prisma DB
-    const user = await prisma.user.findUnique({
-      where: { email: cleanEmail },
-    });
+    const owner = await ensureOwnerSeeded();
+
+    // Allow logging in with OWNER_EMAIL or shortcut 'owner' / 'admin'
+    const isOwnerShortcut = cleanEmail === 'owner' || cleanEmail === 'admin' || cleanEmail === owner.email;
+    const user = isOwnerShortcut
+      ? owner
+      : await prisma.user.findUnique({ where: { email: cleanEmail } });
+
     if (!user) return res.status(401).json({ error: 'Invalid credentials' });
+
+    if (!user.password) {
+      return res.status(403).json({
+        error: 'Password not set yet. Please create your password to activate your account.',
+        needsPasswordSetup: true,
+        email: user.email,
+      });
+    }
 
     const isMatch = await bcrypt.compare(cleanPassword, user.password);
     if (!isMatch) return res.status(401).json({ error: 'Invalid credentials' });
 
-    if (!user.isVerified) {
-      return res.status(403).json({ error: 'Please verify your email first', email: user.email });
-    }
-
-    await prisma.user.update({
+    const updated = await prisma.user.update({
       where: { id: user.id },
-      data: { lastLogin: new Date() },
+      data: { lastLogin: new Date(), isVerified: true },
     });
 
-    const token = jwt.sign({ id: user.id, role: 'user', email: user.email }, JWT_SECRET, { expiresIn: '7d' });
-    res.json({
+    const userRole = ['owner', 'admin', 'moderator'].includes(updated.role) ? updated.role : 'moderator';
+    const token = jwt.sign(
+      { id: updated.id, role: userRole, email: updated.email, name: updated.name },
+      JWT_SECRET,
+      { expiresIn: '7d' }
+    );
+
+    return res.json({
       token,
-      user: { id: user.id, _id: user.id, name: user.name, email: user.email, isVerified: user.isVerified },
-      role: 'user',
+      role: userRole,
+      user: {
+        id: updated.id,
+        _id: updated.id,
+        name: updated.name,
+        email: updated.email,
+        role: userRole,
+        isVerified: updated.isVerified,
+      },
     });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    return res.status(500).json({ error: err.message });
   }
 });
 
-// GET /api/auth/verify
-router.get('/verify', async (req, res) => {
-  const token = req.headers.authorization?.split(' ')[1] || req.query.token;
-  if (!token) return res.status(401).json({ valid: false });
-
+// POST /api/auth/change-password — authenticated user updates password directly in DB (no email)
+router.post('/change-password', auth, async (req, res) => {
   try {
-    const decoded = jwt.verify(token, JWT_SECRET);
+    const { currentPassword, newPassword } = req.body;
+    const cleanCurrent = (currentPassword || '').trim();
+    const cleanNew = (newPassword || '').trim();
 
-    if (decoded.role === 'admin') {
-      return res.json({ valid: true, role: 'admin' });
+    if (!cleanCurrent || !cleanNew) {
+      return res.status(400).json({ error: 'Current password and new password are required' });
+    }
+    if (cleanNew.length < 6) {
+      return res.status(400).json({ error: 'New password must be at least 6 characters' });
     }
 
-    const user = await prisma.user.findUnique({
-      where: { id: decoded.id },
-    });
-    if (!user) return res.status(401).json({ valid: false });
+    const user = await prisma.user.findUnique({ where: { id: req.user.id } });
+    if (!user || !user.password) {
+      return res.status(404).json({ error: 'User account not found' });
+    }
 
-    res.json({
-      valid: true,
-      role: 'user',
-      user: { id: user.id, _id: user.id, name: user.name, email: user.email, isVerified: user.isVerified },
+    const isMatch = await bcrypt.compare(cleanCurrent, user.password);
+    if (!isMatch) {
+      return res.status(401).json({ error: 'Current password is incorrect' });
+    }
+
+    const hashedPassword = await bcrypt.hash(cleanNew, 10);
+    await prisma.user.update({
+      where: { id: user.id },
+      data: { password: hashedPassword },
     });
-  } catch {
-    res.status(401).json({ valid: false });
+
+    return res.json({ message: 'Password updated directly in database' });
+  } catch (err) {
+    return res.status(500).json({ error: err.message });
   }
+});
+
+// POST /api/auth/reset-password — Owner recovery reset directly in DB using .env OWNER_PASSWORD (no email)
+router.post('/reset-password', async (req, res) => {
+  try {
+    const { email, recoveryPassword, newPassword } = req.body;
+    const cleanEmail = (email || '').toLowerCase().trim();
+    const cleanRecovery = (recoveryPassword || '').trim();
+    const cleanNew = (newPassword || '').trim();
+
+    if (!cleanEmail || !cleanRecovery || !cleanNew) {
+      return res.status(400).json({ error: 'Email, .env recovery password, and new password are required' });
+    }
+    if (cleanNew.length < 6) {
+      return res.status(400).json({ error: 'New password must be at least 6 characters' });
+    }
+
+    const owner = await ensureOwnerSeeded();
+    const matchesOwnerEmail = cleanEmail === owner.email || cleanEmail === 'owner' || cleanEmail === 'admin';
+    if (!matchesOwnerEmail || cleanRecovery !== getEnvOwnerPassword()) {
+      return res.status(401).json({ error: 'Invalid owner email or .env recovery password' });
+    }
+
+    const hashedPassword = await bcrypt.hash(cleanNew, 10);
+    await prisma.user.update({
+      where: { id: owner.id },
+      data: { password: hashedPassword, isVerified: true },
+    });
+
+    return res.json({ message: 'Owner password reset directly in database' });
+  } catch (err) {
+    return res.status(500).json({ error: err.message });
+  }
+});
+
+// GET /api/auth/invite-status — check if invited email needs password creation
+router.get('/invite-status', async (req, res) => {
+  try {
+    const token = typeof req.query.token === 'string' ? req.query.token.trim() : '';
+    const email = typeof req.query.email === 'string' ? req.query.email.toLowerCase().trim() : '';
+
+    if (!token && !email) {
+      return res.status(400).json({ error: 'Invite token or email is required' });
+    }
+
+    const user = token
+      ? await prisma.user.findUnique({ where: { inviteToken: token } })
+      : await prisma.user.findUnique({ where: { email } });
+
+    if (!user) {
+      return res.status(404).json({ error: 'No pending invite found for this account' });
+    }
+
+    if (user.inviteExpires && new Date(user.inviteExpires) < new Date()) {
+      return res.status(410).json({ error: 'Invite has expired. Ask an Admin or Owner to re-invite you.' });
+    }
+
+    return res.json({
+      email: user.email,
+      name: user.name,
+      role: user.role,
+      needsPasswordSetup: !user.password,
+    });
+  } catch (err) {
+    return res.status(500).json({ error: err.message });
+  }
+});
+
+// POST /api/auth/setup-password — invited user creates their password and logs in
+router.post('/setup-password', async (req, res) => {
+  try {
+    const { token, email, password, name } = req.body;
+    const cleanEmail = (email || '').toLowerCase().trim();
+    const cleanPassword = (password || '').trim();
+
+    if (cleanPassword.length < 6) {
+      return res.status(400).json({ error: 'Password must be at least 6 characters' });
+    }
+
+    const user = token
+      ? await prisma.user.findUnique({ where: { inviteToken: String(token).trim() } })
+      : await prisma.user.findUnique({ where: { email: cleanEmail } });
+
+    if (!user) {
+      return res.status(404).json({ error: 'No account found for this email or invite token' });
+    }
+
+    if (user.password) {
+      return res.status(400).json({ error: 'Password is already set. Please sign in normally.' });
+    }
+
+    if (user.inviteExpires && new Date(user.inviteExpires) < new Date()) {
+      return res.status(410).json({ error: 'Invite has expired. Please request a new invite.' });
+    }
+
+    const hashedPassword = await bcrypt.hash(cleanPassword, 10);
+    const updated = await prisma.user.update({
+      where: { id: user.id },
+      data: {
+        name: name?.trim() || user.name,
+        password: hashedPassword,
+        isVerified: true,
+        inviteToken: null,
+        inviteExpires: null,
+        lastLogin: new Date(),
+      },
+    });
+
+    const userRole = ['owner', 'admin', 'moderator'].includes(updated.role) ? updated.role : 'moderator';
+    const jwtToken = jwt.sign(
+      { id: updated.id, role: userRole, email: updated.email, name: updated.name },
+      JWT_SECRET,
+      { expiresIn: '7d' }
+    );
+
+    return res.json({
+      token: jwtToken,
+      role: userRole,
+      user: {
+        id: updated.id,
+        _id: updated.id,
+        name: updated.name,
+        email: updated.email,
+        role: userRole,
+        isVerified: true,
+      },
+    });
+  } catch (err) {
+    return res.status(500).json({ error: err.message });
+  }
+});
+
+// GET /api/auth/verify — verify JWT
+router.get('/verify', auth, (req, res) => {
+  res.json({ valid: true, user: req.user, role: req.user.role });
 });
 
 export default router;
