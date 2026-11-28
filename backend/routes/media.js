@@ -126,8 +126,7 @@ router.get('/bundle', async (req, res) => {
       }
     }
 
-    res.setHeader('Cache-Control', 'private, no-store, no-cache, must-revalidate');
-    res.setHeader('Pragma', 'no-cache');
+    res.setHeader('Cache-Control', 'private, max-age=300, stale-while-revalidate=600');
     res.setHeader('X-Content-Type-Options', 'nosniff');
     res.setHeader('X-Robots-Tag', 'noindex, noimageindex');
 

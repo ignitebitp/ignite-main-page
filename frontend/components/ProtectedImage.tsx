@@ -26,7 +26,7 @@ const fetchBundle = (prefix: string): Promise<Record<string, string>> => {
         try {
           const res = await fetch(
             `${API_URL}/api/media/bundle?prefix=${encodeURIComponent(prefix)}`,
-            { credentials: 'same-origin', cache: 'no-store' }
+            { credentials: 'same-origin' }
           );
           if (res.ok) {
             const json = await res.json();

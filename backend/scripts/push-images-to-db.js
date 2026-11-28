@@ -1,6 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 import dotenv from 'dotenv';
+import sharp from 'sharp';
 import { fileURLToPath } from 'url';
 import prisma from '../prisma.js';
 
@@ -36,8 +37,32 @@ function walkFiles(dir) {
   return files;
 }
 
+async function optimizeForDb(key, rawBuffer, ext) {
+  if (ext === '.svg') {
+    return { mimeType: 'image/svg+xml', data: rawBuffer };
+  }
+
+  const isAlumni = key.startsWith('alumni/');
+  const maxWidth = isAlumni ? 360 : 600;
+  const maxHeight = isAlumni ? 360 : 800;
+
+  try {
+    const data = await sharp(rawBuffer)
+      .rotate()
+      .resize(maxWidth, maxHeight, { fit: 'inside', withoutEnlargement: true })
+      .webp({ quality: 78, effort: 5 })
+      .toBuffer();
+
+    return { mimeType: 'image/webp', data };
+  } catch (err) {
+    console.warn(`Sharp optimization skipped for ${key}:`, err.message);
+    return { mimeType: MIME_BY_EXT[ext], data: rawBuffer };
+  }
+}
+
 async function main() {
   let count = 0;
+  let totalBytes = 0;
 
   for (const folder of TARGET_DIRS) {
     const dirPath = path.join(PUBLIC_DIR, folder);
@@ -45,11 +70,11 @@ async function main() {
 
     for (const filePath of files) {
       const ext = path.extname(filePath).toLowerCase();
-      const mimeType = MIME_BY_EXT[ext];
-      if (!mimeType) continue;
+      if (!MIME_BY_EXT[ext]) continue;
 
       const key = path.relative(PUBLIC_DIR, filePath).replace(/\\/g, '/');
-      const data = fs.readFileSync(filePath);
+      const raw = fs.readFileSync(filePath);
+      const { mimeType, data } = await optimizeForDb(key, raw, ext);
 
       await prisma.mediaAsset.upsert({
         where: { key },
@@ -58,11 +83,12 @@ async function main() {
       });
 
       count++;
-      console.log(`Synced: ${key} (${data.length} bytes)`);
+      totalBytes += data.length;
+      console.log(`Synced: ${key} (${raw.length} -> ${data.length} bytes)`);
     }
   }
 
-  console.log(`\nDone. Upserted ${count} media assets into PostgreSQL.`);
+  console.log(`\nDone. Upserted ${count} optimized media assets (${(totalBytes / 1024).toFixed(1)} KB total).`);
 }
 
 main()
@@ -73,4 +99,3 @@ main()
   .finally(async () => {
     await prisma.$disconnect();
   });
-
