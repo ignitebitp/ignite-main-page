@@ -56,7 +56,6 @@ const Navbar: React.FC = () => {
 
   const navLinks: { label: string; path: string; featured?: boolean }[] = [
     { label: 'Home', path: '/' },
-    { label: 'About', path: '/about' },
     { label: 'Team', path: '/team' },
     { label: 'Alumni', path: '/alumni' },
     { label: 'Events', path: '/events' },

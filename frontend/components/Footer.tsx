@@ -59,11 +59,6 @@ const Footer: React.FC = () => {
             </h4>
             <ul className="space-y-2.5 text-sm text-gray-400">
               <li>
-                <Link to="/about" className="hover:text-white hover:translate-x-1 inline-block transition-all">
-                  About Us
-                </Link>
-              </li>
-              <li>
                 <Link to="/team" className="hover:text-white hover:translate-x-1 inline-block transition-all">
                   Our Team
                 </Link>

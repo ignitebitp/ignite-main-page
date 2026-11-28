@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { motion } from 'framer-motion';
-import { ArrowUpRight, Code, Cpu, Users, Zap, Terminal, Shield, Sparkles, ChevronDown, Rocket, Layers } from 'lucide-react';
+import { ArrowUpRight, Code, Cpu, Users, Zap, Terminal, Shield, Sparkles, ChevronDown, Rocket, Layers, Target, Compass } from 'lucide-react';
 import SectionWrapper from '@/components/SectionWrapper';
 import BinaryRain from '@/components/BinaryRain';
 import InteractiveTerminal from '@/components/InteractiveTerminal';
@@ -168,10 +168,83 @@ const Home: React.FC = () => {
         </div>
       </section>
 
-      {/* ================= WHAT WE DO / FOCUS PILLARS ================= */}
-      <section className="py-28 relative">
+      {/* ================= ABOUT US: STORY, MISSION & VISION ================= */}
+      <section className="py-24 relative">
         <div className="container mx-auto px-6">
-          <SectionWrapper className="mb-16">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
+            {/* Story Card */}
+            <SectionWrapper className="lg:col-span-7">
+              <div className="glass-card p-7 md:p-10 rounded-3xl border-t-[1.5px] border-t-white/35 h-full flex flex-col justify-between space-y-5">
+                <div className="space-y-4">
+                  <div className="flex items-center gap-3">
+                    <div className="w-8 h-[2px] bg-primary" />
+                    <span className="text-xs font-mono-code uppercase tracking-[0.22em] text-primary">
+                      WHO WE ARE · {ABOUT_US.campus.toUpperCase()}
+                    </span>
+                  </div>
+                  <h2 className="text-2xl md:text-4xl font-display font-extrabold text-white">
+                    {ABOUT_US.headline}
+                  </h2>
+                  <div className="space-y-3 text-gray-300 text-sm sm:text-base leading-relaxed">
+                    {ABOUT_US.story.map((paragraph, idx) => (
+                      <p key={idx}>{paragraph}</p>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="pt-4 border-t border-white/10 flex flex-wrap items-center gap-4 text-xs font-mono-code text-gray-400">
+                  <span>EST. {ABOUT_US.established}</span>
+                  <span className="text-gray-700">|</span>
+                  <Link to="/team" className="text-primary hover:underline inline-flex items-center gap-1">
+                    <span>Meet the Team</span>
+                    <ArrowUpRight className="w-3.5 h-3.5" />
+                  </Link>
+                </div>
+              </div>
+            </SectionWrapper>
+
+            {/* Mission & Vision Stacked Cards */}
+            <div className="lg:col-span-5 flex flex-col gap-6">
+              <SectionWrapper delay={0.05} className="flex-1">
+                <div className="glass-card p-7 rounded-2xl border-t-[1.5px] border-t-white/35 h-full">
+                  <div className="flex items-center gap-3 mb-3">
+                    <div className="w-10 h-10 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center text-primary flex-shrink-0">
+                      <Target className="w-5 h-5" />
+                    </div>
+                    <h3 className="text-xl font-display font-bold text-white">
+                      {ABOUT_US.mission.title}
+                    </h3>
+                  </div>
+                  <p className="text-gray-400 text-sm leading-relaxed">
+                    {ABOUT_US.mission.summary}
+                  </p>
+                </div>
+              </SectionWrapper>
+
+              <SectionWrapper delay={0.08} className="flex-1">
+                <div className="glass-card p-7 rounded-2xl border-t-[1.5px] border-t-white/35 h-full">
+                  <div className="flex items-center gap-3 mb-3">
+                    <div className="w-10 h-10 rounded-xl bg-cyber-violet/10 border border-cyber-violet/20 flex items-center justify-center text-cyber-violet flex-shrink-0">
+                      <Compass className="w-5 h-5" />
+                    </div>
+                    <h3 className="text-xl font-display font-bold text-white">
+                      {ABOUT_US.vision.title}
+                    </h3>
+                  </div>
+                  <p className="text-gray-400 text-sm leading-relaxed">
+                    {ABOUT_US.vision.summary}
+                  </p>
+                </div>
+              </SectionWrapper>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ================= WHAT WE DO / FOCUS PILLARS ================= */}
+      <section className="py-20 relative">
+        <div className="container mx-auto px-6">
+          <SectionWrapper className="mb-14">
             <div className="flex items-center gap-3 mb-4">
               <div className="w-8 h-[2px] bg-primary" />
               <span className="text-primary font-mono-code text-xs uppercase tracking-[0.25em]">
@@ -182,16 +255,9 @@ const Home: React.FC = () => {
               What We Do.{' '}
               <span className="font-editorial text-primary font-normal">From Kernel to Cloud.</span>
             </h2>
-            <p className="text-base md:text-lg text-gray-400 max-w-2xl leading-relaxed mb-4">
-              {ABOUT_US.mission.summary}
+            <p className="text-base md:text-lg text-gray-400 max-w-2xl leading-relaxed">
+              {ABOUT_US.shortDescription}
             </p>
-            <Link
-              to="/about"
-              className="inline-flex items-center gap-1.5 text-xs font-mono-code text-primary hover:underline"
-            >
-              <span>Read more about IGNITE</span>
-              <ArrowUpRight className="w-3.5 h-3.5" />
-            </Link>
           </SectionWrapper>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">

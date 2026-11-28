@@ -101,7 +101,7 @@ const Alumni: React.FC = () => {
                 >
                   {batches.map(batch => (
                     <option key={batch} value={batch}>
-                      Batch {batch}
+                      {batch}
                     </option>
                   ))}
                   <option value="All">All Batches</option>
@@ -139,7 +139,7 @@ const Alumni: React.FC = () => {
                       />
                     )}
                     <span className="relative z-10">
-                      {tab === 'All' ? 'All batches' : `Batch ${tab}`}
+                      {tab === 'All' ? 'All batches' : tab}
                     </span>
                     <span
                       className={`relative z-10 text-[10px] tabular-nums px-1.5 py-0.5 rounded-full ${
@@ -245,7 +245,7 @@ const Alumni: React.FC = () => {
                         </div>
 
                         <span className="inline-block px-2 py-0.5 bg-white/5 rounded-full text-[10px] font-mono-code text-gray-400 border border-white/5">
-                          Batch {alum.batch}
+                          {alum.batch}
                         </span>
                       </div>
                     </div>
