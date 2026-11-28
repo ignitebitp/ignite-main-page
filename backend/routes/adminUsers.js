@@ -100,20 +100,20 @@ router.post('/users', auth, requireAdmin, async (req, res) => {
 
     const user = existing
       ? await prisma.user.update({
-          where: { id: existing.id },
-          data: { name: displayName, role: requestedRole, inviteToken, inviteExpires },
-        })
+        where: { id: existing.id },
+        data: { name: displayName, role: requestedRole, inviteToken, inviteExpires },
+      })
       : await prisma.user.create({
-          data: {
-            name: displayName,
-            email: cleanEmail,
-            role: requestedRole,
-            password: null,
-            isVerified: false,
-            inviteToken,
-            inviteExpires,
-          },
-        });
+        data: {
+          name: displayName,
+          email: cleanEmail,
+          role: requestedRole,
+          password: null,
+          isVerified: false,
+          inviteToken,
+          inviteExpires,
+        },
+      });
 
     const inviteLink = `${SITE_URL}/admin?invite=${inviteToken}&email=${encodeURIComponent(cleanEmail)}`;
 
@@ -232,7 +232,7 @@ router.delete('/users/:id', auth, requireAdmin, async (req, res) => {
 // GET /api/admin/resend-status — check Resend API key status
 router.get('/resend-status', auth, requireStaff, async (req, res) => {
   const configured = Boolean(process.env.RESEND_API_KEY && process.env.RESEND_API_KEY.startsWith('re_'));
-  const sender = process.env.RESEND_FROM_EMAIL || 'onboarding@resend.dev';
+  const sender = process.env.RESEND_FROM_EMAIL || 'info@igniteclub.tech';
   res.json({
     configured,
     sender,

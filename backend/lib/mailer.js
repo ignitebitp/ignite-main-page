@@ -1,7 +1,12 @@
 import { Resend } from 'resend';
 import dotenv from 'dotenv';
+import path from 'path';
+import { fileURLToPath } from 'url';
 
-dotenv.config();
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+dotenv.config({ path: path.resolve(__dirname, '../../.env') });
+dotenv.config({ path: path.resolve(__dirname, '../.env') });
 
 let resendInstance = null;
 const getResend = () => {
@@ -25,9 +30,10 @@ export const sendEmail = async (to, subject, html) => {
   }
 
   const resend = getResend();
-  // Resend default onboarding sender works out of the box for testing
-  const fromEmail = process.env.RESEND_FROM_EMAIL || 'onboarding@resend.dev';
-  const from = fromEmail.includes('<') ? fromEmail : `IGNITE Technical Club <${fromEmail}>`;
+  const rawFrom = (process.env.RESEND_FROM_EMAIL || 'info@igniteclub.tech').trim();
+  const emailMatch = rawFrom.match(/<([^>]+)>/);
+  const fromEmail = emailMatch ? emailMatch[1].trim() : rawFrom;
+  const from = `IGNITE Club <${fromEmail}>`;
 
   try {
     const { data, error } = await resend.emails.send({
