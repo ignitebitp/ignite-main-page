@@ -45,10 +45,6 @@ backend/uploads/*
 server/.env
 server/uploads/
 
-# Protected team & alumni images (stored in DB, kept locally only)
-frontend/public/team/
-frontend/public/alumni/
-
 # Agent skills & rules (kept locally only)
 .agents/
 .agent/
