@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Lock, LogOut, Users, Calendar, FileText, Brain, Mail, Image as ImageIcon, ShieldCheck, MessageSquare, KeyRound, X, CheckCircle2 } from 'lucide-react';
+import { Lock, LogOut, Users, Calendar, FileText, Brain, Mail, Image as ImageIcon, ShieldCheck, MessageSquare, KeyRound, X, CheckCircle2, Eye, EyeOff } from 'lucide-react';
 import { api } from '@/lib/api';
 import { RecruitmentPanel } from '@/components/admin/RecruitmentPanel';
 import { EventsPanel } from '@/components/admin/EventsPanel';
@@ -24,6 +24,7 @@ const Admin: React.FC = () => {
     const [userEmail, setUserEmail] = useState('');
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
+    const [showLoginPassword, setShowLoginPassword] = useState(false);
     const [loginError, setLoginError] = useState('');
     const [loggingIn, setLoggingIn] = useState(false);
     const [activeTab, setActiveTab] = useState<Tab>('recruitment');
@@ -32,9 +33,12 @@ const Admin: React.FC = () => {
     const [setupMode, setSetupMode] = useState(false);
     const [resetOwnerMode, setResetOwnerMode] = useState(false);
     const [inviteToken, setInviteToken] = useState('');
+    const [setupName, setSetupName] = useState('');
     const [setupEmail, setSetupEmail] = useState('');
     const [setupPassword, setSetupPassword] = useState('');
     const [setupConfirm, setSetupConfirm] = useState('');
+    const [showSetupPass, setShowSetupPass] = useState(false);
+    const [showSetupConfirm, setShowSetupConfirm] = useState(false);
     const [recoveryKey, setRecoveryKey] = useState('');
 
     // Logged-in Change Password modal
@@ -117,6 +121,7 @@ const Admin: React.FC = () => {
             const res = await api.setupPassword({
                 token: inviteToken || undefined,
                 email: setupEmail.trim() || undefined,
+                name: setupName.trim() || undefined,
                 password: setupPassword,
             });
             localStorage.setItem('ignite_admin_token', res.token);
@@ -226,6 +231,17 @@ const Admin: React.FC = () => {
                     {setupMode ? (
                         <form onSubmit={handleSetupPassword} className="space-y-4">
                             <div>
+                                <label className="text-xs font-mono-code text-gray-400 block mb-1">Full Name *</label>
+                                <input
+                                    type="text"
+                                    value={setupName}
+                                    onChange={e => setSetupName(e.target.value)}
+                                    placeholder="Your full name"
+                                    required
+                                    className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-primary text-sm font-mono-code transition-all"
+                                />
+                            </div>
+                            <div>
                                 <label className="text-xs font-mono-code text-gray-400 block mb-1">Invited Email</label>
                                 <input
                                     type="email"
@@ -238,25 +254,45 @@ const Admin: React.FC = () => {
                             </div>
                             <div>
                                 <label className="text-xs font-mono-code text-gray-400 block mb-1">Create Password *</label>
-                                <input
-                                    type="password"
-                                    value={setupPassword}
-                                    onChange={e => setSetupPassword(e.target.value)}
-                                    placeholder="At least 6 characters"
-                                    required
-                                    className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-primary text-sm font-mono-code transition-all"
-                                />
+                                <div className="relative">
+                                    <input
+                                        type={showSetupPass ? 'text' : 'password'}
+                                        value={setupPassword}
+                                        onChange={e => setSetupPassword(e.target.value)}
+                                        placeholder="At least 6 characters"
+                                        required
+                                        className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 pr-12 text-white placeholder-gray-500 focus:outline-none focus:border-primary text-sm font-mono-code transition-all"
+                                    />
+                                    <button
+                                        type="button"
+                                        onClick={() => setShowSetupPass(prev => !prev)}
+                                        aria-label={showSetupPass ? 'Hide password' : 'Show password'}
+                                        className="absolute right-1.5 top-1/2 -translate-y-1/2 w-9 h-9 rounded-lg flex items-center justify-center text-gray-400 hover:text-white hover:bg-white/5 transition-colors"
+                                    >
+                                        {showSetupPass ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                                    </button>
+                                </div>
                             </div>
                             <div>
                                 <label className="text-xs font-mono-code text-gray-400 block mb-1">Confirm Password *</label>
-                                <input
-                                    type="password"
-                                    value={setupConfirm}
-                                    onChange={e => setSetupConfirm(e.target.value)}
-                                    placeholder="Repeat password"
-                                    required
-                                    className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-primary text-sm font-mono-code transition-all"
-                                />
+                                <div className="relative">
+                                    <input
+                                        type={showSetupConfirm ? 'text' : 'password'}
+                                        value={setupConfirm}
+                                        onChange={e => setSetupConfirm(e.target.value)}
+                                        placeholder="Repeat password"
+                                        required
+                                        className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 pr-12 text-white placeholder-gray-500 focus:outline-none focus:border-primary text-sm font-mono-code transition-all"
+                                    />
+                                    <button
+                                        type="button"
+                                        onClick={() => setShowSetupConfirm(prev => !prev)}
+                                        aria-label={showSetupConfirm ? 'Hide password' : 'Show password'}
+                                        className="absolute right-1.5 top-1/2 -translate-y-1/2 w-9 h-9 rounded-lg flex items-center justify-center text-gray-400 hover:text-white hover:bg-white/5 transition-colors"
+                                    >
+                                        {showSetupConfirm ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                                    </button>
+                                </div>
                             </div>
 
                             {loginError && (
@@ -297,14 +333,24 @@ const Admin: React.FC = () => {
 
                             <div>
                                 <label className="text-xs font-mono-code text-gray-400 block mb-1">Password</label>
-                                <input
-                                    type="password"
-                                    value={password}
-                                    onChange={e => setPassword(e.target.value)}
-                                    placeholder="••••••••"
-                                    required
-                                    className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-primary text-sm font-mono-code transition-all"
-                                />
+                                <div className="relative">
+                                    <input
+                                        type={showLoginPassword ? 'text' : 'password'}
+                                        value={password}
+                                        onChange={e => setPassword(e.target.value)}
+                                        placeholder="••••••••"
+                                        required
+                                        className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 pr-12 text-white placeholder-gray-500 focus:outline-none focus:border-primary text-sm font-mono-code transition-all"
+                                    />
+                                    <button
+                                        type="button"
+                                        onClick={() => setShowLoginPassword(prev => !prev)}
+                                        aria-label={showLoginPassword ? 'Hide password' : 'Show password'}
+                                        className="absolute right-1.5 top-1/2 -translate-y-1/2 w-9 h-9 rounded-lg flex items-center justify-center text-gray-400 hover:text-white hover:bg-white/5 transition-colors"
+                                    >
+                                        {showLoginPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                                    </button>
+                                </div>
                             </div>
 
                             {loginError && (

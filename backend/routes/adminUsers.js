@@ -3,7 +3,7 @@ import crypto from 'crypto';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import prisma from '../prisma.js';
-import auth, { requireAdmin, requireStaff } from '../middleware/auth.js';
+import auth, { requireAdmin, requireOwner, requireStaff } from '../middleware/auth.js';
 import { sendEmail } from '../lib/mailer.js';
 
 const router = express.Router();
@@ -148,6 +148,32 @@ router.post('/users', auth, requireAdmin, async (req, res) => {
         createdAt: user.createdAt,
       },
     });
+  } catch (err) {
+    return res.status(500).json({ error: err.message });
+  }
+});
+
+// PATCH /api/admin/users/:id/role — Owner only: promote moderator <-> admin
+router.patch('/users/:id/role', auth, requireOwner, async (req, res) => {
+  try {
+    const nextRole = (req.body?.role || '').toLowerCase().trim();
+    if (!['admin', 'moderator'].includes(nextRole)) {
+      return res.status(400).json({ error: 'Role must be admin or moderator' });
+    }
+
+    const target = await prisma.user.findUnique({ where: { id: req.params.id } });
+    if (!target) return res.status(404).json({ error: 'User not found' });
+    if (target.role === 'owner') {
+      return res.status(403).json({ error: 'Cannot change the Owner role' });
+    }
+
+    const updated = await prisma.user.update({
+      where: { id: target.id },
+      data: { role: nextRole },
+      select: { id: true, name: true, email: true, role: true, isVerified: true, createdAt: true },
+    });
+
+    return res.json({ ...updated, _id: updated.id });
   } catch (err) {
     return res.status(500).json({ error: err.message });
   }

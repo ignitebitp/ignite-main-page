@@ -2,12 +2,13 @@
 
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Mail, Lock, LogIn, ArrowRight, ShieldAlert, Terminal } from 'lucide-react';
+import { Mail, Lock, LogIn, ArrowRight, ShieldAlert, Terminal, Eye, EyeOff } from 'lucide-react';
 import { api } from '@/lib/api';
 import { useNavigate, Link } from '@/lib/navigation';
 
 export default function Login() {
     const [loading, setLoading] = useState(false);
+    const [showPassword, setShowPassword] = useState(false);
     const [error, setError] = useState('');
     const [formData, setFormData] = useState({
         email: '',
@@ -88,17 +89,25 @@ export default function Login() {
                     <div className="space-y-1.5">
                         <div className="flex justify-between items-center px-1">
                             <label className="text-[10px] font-mono-code uppercase tracking-wider text-gray-400">Passphrase</label>
-                            <Link to="/forgot-password" className="text-[10px] font-mono-code text-primary/70 hover:text-primary">Forgot Key?</Link>
+                            <Link to="/admin" className="text-[10px] font-mono-code text-primary/70 hover:text-primary">Forgot Key?</Link>
                         </div>
                         <div className="relative group">
                             <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500 group-focus-within:text-primary transition-colors" />
                             <input
-                                type="password" required
+                                type={showPassword ? 'text' : 'password'} required
                                 value={formData.password}
                                 onChange={e => setFormData({ ...formData, password: e.target.value })}
-                                className="w-full bg-white/5 border border-white/10 rounded-xl py-3 pl-12 pr-4 text-white text-sm outline-none focus:border-primary transition-all"
+                                className="w-full bg-white/5 border border-white/10 rounded-xl py-3 pl-12 pr-12 text-white text-sm outline-none focus:border-primary transition-all"
                                 placeholder="••••••••"
                             />
+                            <button
+                                type="button"
+                                onClick={() => setShowPassword(prev => !prev)}
+                                aria-label={showPassword ? 'Hide password' : 'Show password'}
+                                className="absolute right-1.5 top-1/2 -translate-y-1/2 w-9 h-9 rounded-lg flex items-center justify-center text-gray-400 hover:text-white hover:bg-white/5 transition-colors"
+                            >
+                                {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                            </button>
                         </div>
                     </div>
 
@@ -115,7 +124,7 @@ export default function Login() {
                     </button>
 
                     <p className="text-center text-gray-400 text-xs font-mono-code mt-6">
-                        No active credentials? <Link to="/register" className="text-primary hover:underline">Register for Ignite</Link>
+                        Want to join IGNITE? <Link to="/recruit" className="text-primary hover:underline">Apply via Recruitment</Link>
                     </p>
                 </form>
             </motion.div>

@@ -24,8 +24,17 @@ export const api = {
         if (token) headers['Authorization'] = `Bearer ${token}`;
 
         const res = await fetch(`${API_URL}${endpoint}`, { ...options, headers });
-        const data = await res.json();
-        if (!res.ok) throw new Error(data.error || 'Something went wrong');
+        const text = await res.text();
+        let data: any = {};
+        try {
+            data = text ? JSON.parse(text) : {};
+        } catch {
+            if (!res.ok) {
+                throw new Error(`Server error (${res.status}): received non-JSON response`);
+            }
+            throw new Error('Unexpected non-JSON response from server');
+        }
+        if (!res.ok) throw new Error(data.error || `Request failed (${res.status})`);
         return data;
     },
 
@@ -121,6 +130,8 @@ export const api = {
     getAdminUsers: () => api.request('/api/admin/users'),
     addAdminUser: (data: { email: string; name?: string; role: 'admin' | 'moderator' }) =>
         api.request('/api/admin/users', { method: 'POST', body: JSON.stringify(data) }),
+    updateStaffRole: (id: string, role: 'admin' | 'moderator') =>
+        api.request(`/api/admin/users/${id}/role`, { method: 'PATCH', body: JSON.stringify({ role }) }),
     resetStaffPassword: (id: string, newPassword: string) =>
         api.request(`/api/admin/users/${id}/reset-password`, { method: 'POST', body: JSON.stringify({ newPassword }) }),
     deleteAdminUser: (id: string) => api.request(`/api/admin/users/${id}`, { method: 'DELETE' }),

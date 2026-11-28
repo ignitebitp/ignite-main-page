@@ -68,6 +68,15 @@ export const UsersPanel: React.FC<UsersPanelProps> = ({ currentRole }) => {
         }
     };
 
+    const handleRoleChange = async (id: string, newRole: 'admin' | 'moderator') => {
+        try {
+            await api.updateStaffRole(id, newRole);
+            setUsers(prev => prev.map(u => (u._id === id ? { ...u, role: newRole } : u)));
+        } catch (err: any) {
+            alert(err?.message || 'Failed to update role');
+        }
+    };
+
     const handleResetPassword = async (id: string) => {
         if (resetNewPass.trim().length < 6) {
             alert('New password must be at least 6 characters.');
@@ -258,7 +267,18 @@ export const UsersPanel: React.FC<UsersPanelProps> = ({ currentRole }) => {
                                 </div>
 
                                 {canDelete && (
-                                    <div className="flex items-center gap-2">
+                                    <div className="flex flex-wrap items-center gap-2">
+                                        {currentRole === 'owner' && (
+                                            <select
+                                                value={user.role}
+                                                onChange={e => handleRoleChange(user._id, e.target.value as 'admin' | 'moderator')}
+                                                aria-label={`Role for ${user.email}`}
+                                                className="bg-[#1a1a1a] border border-white/10 rounded-lg px-2.5 py-1.5 text-xs font-mono-code text-white outline-none focus:border-primary cursor-pointer"
+                                            >
+                                                <option value="moderator">Moderator</option>
+                                                <option value="admin">Admin</option>
+                                            </select>
+                                        )}
                                         {resetUserId === user._id ? (
                                             <div className="flex items-center gap-2">
                                                 <input
