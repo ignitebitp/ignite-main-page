@@ -9,6 +9,7 @@ export const TEAM_SECTION = teamSectionJson as {
   executiveBoard: TeamMember[];
   coreTechnicalTeam: TeamMember[];
   members: TeamMember[];
+  juniorCoordinators: TeamMember[];
 };
 
 export const ALUMNI_SECTION = alumniSectionJson as Record<

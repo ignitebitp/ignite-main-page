@@ -88,6 +88,7 @@ const Team: React.FC = () => {
 
   const coreTeam = TEAM_SECTION.coreTechnicalTeam;
   const members = TEAM_SECTION.members;
+  const juniorCoordinators = TEAM_SECTION.juniorCoordinators || [];
 
   return (
     <div className="pt-32 pb-24 min-h-screen">
@@ -169,16 +170,36 @@ const Team: React.FC = () => {
           </div>
         )}
 
-        {/* General Members */}
+        {/* General Members / Senior Coordinators */}
         {members.length > 0 && (
+          <div className="mb-20">
+            <div className="flex items-center space-x-3 mb-8">
+              <div className="w-6 h-[2px] bg-primary" />
+              <h2 className="text-xs font-mono-code uppercase tracking-[0.2em] text-primary">
+                Senior Coordinators
+              </h2>
+            </div>
+            <div className="flex flex-wrap justify-center gap-6 max-w-6xl mx-auto">
+              {members.map((member, index) => (
+                <SectionWrapper key={`${member.name}-${member.role}-${index}`} delay={index * 0.02} className="flex justify-center flex-shrink-0">
+                  <TeamCard member={member} />
+                </SectionWrapper>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Junior Coordinators */}
+        {juniorCoordinators.length > 0 && (
           <div>
             <div className="flex items-center space-x-3 mb-8">
               <div className="w-6 h-[2px] bg-primary" />
               <h2 className="text-xs font-mono-code uppercase tracking-[0.2em] text-primary">
-                Senior Coordinators              </h2>
+                Junior Coordinators
+              </h2>
             </div>
             <div className="flex flex-wrap justify-center gap-6 max-w-6xl mx-auto">
-              {members.map((member, index) => (
+              {juniorCoordinators.map((member, index) => (
                 <SectionWrapper key={`${member.name}-${member.role}-${index}`} delay={index * 0.02} className="flex justify-center flex-shrink-0">
                   <TeamCard member={member} />
                 </SectionWrapper>

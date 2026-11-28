@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from '../lib/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Menu, X, Sparkles, User, ArrowUpRight } from 'lucide-react';
+import { Menu, X, Sparkles, ArrowUpRight } from 'lucide-react';
 import { api } from '../lib/api';
 
 const Navbar: React.FC = () => {
@@ -11,7 +11,6 @@ const Navbar: React.FC = () => {
   const [featuredEvents, setFeaturedEvents] = useState<any[]>([]);
   const [hasActiveEvents, setHasActiveEvents] = useState(false);
   const [noEventsToast, setNoEventsToast] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -48,13 +47,6 @@ const Navbar: React.FC = () => {
 
   useEffect(() => {
     setIsOpen(false);
-  }, [location]);
-
-  useEffect(() => {
-    const token = localStorage.getItem('ignite_admin_token');
-    if (token) {
-      api.verifyToken().then(res => setIsLoggedIn(res.valid)).catch(() => setIsLoggedIn(false));
-    }
   }, [location]);
 
   const customRoutes: Record<string, string> = {
@@ -162,36 +154,24 @@ const Navbar: React.FC = () => {
             })}
           </nav>
 
-          {/* Right Actions: Register CTA + Mobile Trigger */}
+          {/* Right Actions: Register CTA + Login + Mobile Trigger */}
           <div className="flex items-center space-x-2 md:space-x-3">
             {/* Primary Action Button (Cyber Violet Pill) */}
-            {isLoggedIn ? (
-              <Link
-                to="/profile"
-                className="btn-cyber-violet hidden sm:flex items-center gap-1.5 px-4 py-1.5 rounded-full text-xs md:text-sm font-medium tracking-wide shadow-md"
-              >
-                <User className="w-3.5 h-3.5" />
-                <span>Profile</span>
-              </Link>
-            ) : (
-              <button
-                type="button"
-                onClick={handleRegisterClick}
-                className="btn-cyber-violet hidden sm:flex items-center gap-1.5 px-4 py-1.5 rounded-full text-xs md:text-sm font-medium tracking-wide shadow-md"
-              >
-                <span>Register</span>
-                <ArrowUpRight className="w-3.5 h-3.5 opacity-80" />
-              </button>
-            )}
+            <button
+              type="button"
+              onClick={handleRegisterClick}
+              className="btn-cyber-violet hidden sm:flex items-center gap-1.5 px-4 py-1.5 rounded-full text-xs md:text-sm font-medium tracking-wide shadow-md"
+            >
+              <span>Register</span>
+              <ArrowUpRight className="w-3.5 h-3.5 opacity-80" />
+            </button>
 
-            {!isLoggedIn && (
-              <Link
-                to="/login"
-                className="hidden md:inline-flex text-xs font-mono-code text-gray-400 hover:text-white transition-colors px-2 py-1"
-              >
-                Login
-              </Link>
-            )}
+            <Link
+              to="/login"
+              className="hidden md:inline-flex text-xs font-mono-code text-gray-400 hover:text-white transition-colors px-2 py-1"
+            >
+              Login
+            </Link>
 
             {/* Mobile Hamburger Trigger (44px touch hit slop) */}
             <button
@@ -253,34 +233,21 @@ const Navbar: React.FC = () => {
 
             {/* Mobile bottom actions */}
             <div className="pt-6 border-t border-white/10 space-y-3">
-              {isLoggedIn ? (
-                <Link
-                  to="/profile"
-                  onClick={() => setIsOpen(false)}
-                  className="w-full btn-cyber-violet py-3 rounded-xl flex items-center justify-center gap-2 font-bold text-center"
-                >
-                  Access Profile
-                  <ArrowUpRight className="w-4 h-4" />
-                </Link>
-              ) : (
-                <button
-                  type="button"
-                  onClick={handleRegisterClick}
-                  className="w-full btn-cyber-violet py-3 rounded-xl flex items-center justify-center gap-2 font-bold text-center"
-                >
-                  Register for Events
-                  <ArrowUpRight className="w-4 h-4" />
-                </button>
-              )}
-              {!isLoggedIn && (
-                <Link
-                  to="/login"
-                  onClick={() => setIsOpen(false)}
-                  className="w-full block py-2.5 rounded-xl text-center text-sm font-mono-code text-gray-400 hover:text-white bg-white/5"
-                >
-                  Member Login
-                </Link>
-              )}
+              <button
+                type="button"
+                onClick={handleRegisterClick}
+                className="w-full btn-cyber-violet py-3 rounded-xl flex items-center justify-center gap-2 font-bold text-center"
+              >
+                Register for Events
+                <ArrowUpRight className="w-4 h-4" />
+              </button>
+              <Link
+                to="/login"
+                onClick={() => setIsOpen(false)}
+                className="w-full block py-2.5 rounded-xl text-center text-sm font-mono-code text-gray-400 hover:text-white bg-white/5"
+              >
+                Login
+              </Link>
             </div>
           </motion.div>
         )}

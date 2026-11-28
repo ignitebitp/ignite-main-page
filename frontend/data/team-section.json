@@ -1,7 +1,7 @@
 {
   "executiveBoard": [
     {
-      "name": "Rajeev Raj",
+      "name": "Rajeev Srivastava",
       "post": "Executive Board",
       "role": "President",
       "image": "/team/rajeev-raj.webp",
@@ -239,6 +239,118 @@
       "post": "Member",
       "role": "Member",
       "image": "/team/abhishek-bharti.webp",
+      "socials": {
+        "linkedin": "",
+        "website": ""
+      }
+    }
+  ],
+  "juniorCoordinators": [
+    {
+      "name": "Raushan Raj",
+      "post": "Junior Coordinator",
+      "role": "Content",
+      "image": "/team/raushan-raj.webp",
+      "socials": {
+        "linkedin": "",
+        "website": ""
+      }
+    },
+    {
+      "name": "Aditya Shrivastava",
+      "post": "Junior Coordinator",
+      "role": "Social Media",
+      "image": "/team/aditya-shrivastava.webp",
+      "socials": {
+        "linkedin": "",
+        "website": ""
+      }
+    },
+    {
+      "name": "Anupriya Giri",
+      "post": "Junior Coordinator",
+      "role": "Design",
+      "image": "/team/anupriya-giri.webp",
+      "socials": {
+        "linkedin": "",
+        "website": ""
+      }
+    },
+    {
+      "name": "Utkarsh Priyadarshi",
+      "post": "Junior Coordinator",
+      "role": "Design",
+      "image": "/team/utkarsh-priyadarshi.webp",
+      "socials": {
+        "linkedin": "",
+        "website": ""
+      }
+    },
+    {
+      "name": "Arya Sumit",
+      "post": "Junior Coordinator",
+      "role": "Social Media",
+      "image": "/team/arya-sumit.webp",
+      "socials": {
+        "linkedin": "",
+        "website": ""
+      }
+    },
+    {
+      "name": "Deep Anchal",
+      "post": "Junior Coordinator",
+      "role": "Design",
+      "image": "/team/deep-anchal.webp",
+      "socials": {
+        "linkedin": "",
+        "website": ""
+      }
+    },
+    {
+      "name": "Kshitiz Tiwari",
+      "post": "Junior Coordinator",
+      "role": "Design",
+      "image": "/team/kshitiz-tiwari.webp",
+      "socials": {
+        "linkedin": "",
+        "website": ""
+      }
+    },
+    {
+      "name": "Aman Kumar Kushwaha",
+      "post": "Junior Coordinator",
+      "role": "Design",
+      "image": "/team/aman-kumar-kushwaha.webp",
+      "socials": {
+        "linkedin": "",
+        "website": ""
+      }
+    },
+    {
+      "name": "Kumari Pooja",
+      "post": "Junior Coordinator",
+      "role": "Design",
+      "image": "/team/kumari-pooja.webp",
+      "socials": {
+        "linkedin": "",
+        "website": ""
+      }
+    },
+    {
+      "name": "Puru Saraswat",
+      "post": "Junior Coordinator",
+      "role": "Event Management",
+      "image": "/team/puru-saraswat.webp",
+      "socials": {
+        "linkedin": "",
+        "website": ""
+      }
+    },
+    {
+      "name": "Pranay Anand",
+      "post": "Junior Coordinator",
+      "role": "Content",
+      "image": "/team/pranay-anand.webp",
       "socials": {
         "linkedin": "",
         "website": ""
