@@ -23,18 +23,14 @@ export default function Login() {
             const res = await api.login(formData);
             localStorage.setItem('ignite_admin_token', res.token);
 
-            if (res.role === 'admin') {
+            if (['owner', 'admin', 'moderator'].includes(res.role)) {
                 navigate('/admin');
             } else {
                 localStorage.setItem('ignite_user', JSON.stringify(res.user));
                 navigate('/profile');
             }
         } catch (err: any) {
-            if (err.message === 'Please verify your email first') {
-                setError('Please verify your email first');
-            } else {
-                setError('Invalid email or password');
-            }
+            setError(err?.message || 'Invalid email or password');
         } finally {
             setLoading(false);
         }

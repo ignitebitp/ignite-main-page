@@ -15,10 +15,18 @@ const getEnvOwnerPassword = () => (process.env.OWNER_PASSWORD || process.env.ADM
  * Once in the DB, password changes/resets mutate the DB row directly.
  */
 async function ensureOwnerSeeded() {
-  const existingOwner = await prisma.user.findFirst({ where: { role: 'owner' } });
-  if (existingOwner) return existingOwner;
-
   const ownerEmail = getEnvOwnerEmail();
+  const existingOwner = await prisma.user.findFirst({ where: { role: 'owner' } });
+  if (existingOwner) {
+    if (existingOwner.email !== ownerEmail) {
+      return await prisma.user.update({
+        where: { id: existingOwner.id },
+        data: { email: ownerEmail },
+      });
+    }
+    return existingOwner;
+  }
+
   const hashedPassword = await bcrypt.hash(getEnvOwnerPassword(), 10);
 
   return await prisma.user.upsert({
@@ -48,8 +56,8 @@ router.post('/login', async (req, res) => {
     const owner = await ensureOwnerSeeded();
 
     // Allow logging in with OWNER_EMAIL or shortcut 'owner' / 'admin'
-    const isOwnerShortcut = cleanEmail === 'owner' || cleanEmail === 'admin' || cleanEmail === owner.email;
-    const user = isOwnerShortcut
+    const isOwnerLogin = cleanEmail === 'owner' || cleanEmail === 'admin' || cleanEmail === owner.email;
+    const user = isOwnerLogin
       ? owner
       : await prisma.user.findUnique({ where: { email: cleanEmail } });
 
@@ -63,7 +71,13 @@ router.post('/login', async (req, res) => {
       });
     }
 
-    const isMatch = await bcrypt.compare(cleanPassword, user.password);
+    let isMatch = await bcrypt.compare(cleanPassword, user.password);
+    // If .env OWNER_PASSWORD was updated directly, allow it and sync DB hash
+    if (!isMatch && isOwnerLogin && cleanPassword === getEnvOwnerPassword()) {
+      isMatch = true;
+      const newHash = await bcrypt.hash(cleanPassword, 10);
+      await prisma.user.update({ where: { id: owner.id }, data: { password: newHash } });
+    }
     if (!isMatch) return res.status(401).json({ error: 'Invalid credentials' });
 
     const updated = await prisma.user.update({
