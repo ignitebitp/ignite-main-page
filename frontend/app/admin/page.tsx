@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Lock, LogOut, Users, Calendar, FileText, Brain, Mail, Image as ImageIcon, ShieldCheck, MessageSquare, KeyRound, X, CheckCircle2, Eye, EyeOff } from 'lucide-react';
+import { Lock, LogOut, Users, Calendar, FileText, Brain, Mail, Image as ImageIcon, ShieldCheck, MessageSquare, KeyRound, X, CheckCircle2, Eye, EyeOff, Pencil } from 'lucide-react';
 import { api } from '@/lib/api';
 import { RecruitmentPanel } from '@/components/admin/RecruitmentPanel';
 import { EventsPanel } from '@/components/admin/EventsPanel';
@@ -22,6 +22,7 @@ const Admin: React.FC = () => {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [userRole, setUserRole] = useState<StaffRole>('moderator');
     const [userEmail, setUserEmail] = useState('');
+    const [userName, setUserName] = useState('');
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [showLoginPassword, setShowLoginPassword] = useState(false);
@@ -50,6 +51,13 @@ const Admin: React.FC = () => {
     const [cpError, setCpError] = useState('');
     const [cpSuccess, setCpSuccess] = useState(false);
 
+    // Logged-in Edit Name modal
+    const [showEditName, setShowEditName] = useState(false);
+    const [editNameValue, setEditNameValue] = useState('');
+    const [editNameLoading, setEditNameLoading] = useState(false);
+    const [editNameError, setEditNameError] = useState('');
+    const [editNameSuccess, setEditNameSuccess] = useState(false);
+
     useEffect(() => {
         if (typeof window !== 'undefined') {
             const params = new URLSearchParams(window.location.search);
@@ -71,6 +79,7 @@ const Admin: React.FC = () => {
                         setIsLoggedIn(true);
                         setUserRole(role);
                         setUserEmail(res?.user?.email || '');
+                        setUserName(res?.user?.name || '');
                     } else {
                         localStorage.removeItem('ignite_admin_token');
                     }
@@ -193,6 +202,32 @@ const Admin: React.FC = () => {
             setCpError(err?.message || 'Failed to update password.');
         } finally {
             setCpLoading(false);
+        }
+    };
+
+    const handleEditName = async (e: React.FormEvent) => {
+        e.preventDefault();
+        setEditNameError('');
+        const trimmed = editNameValue.trim();
+        if (trimmed.length < 2) {
+            setEditNameError('Name must be at least 2 characters.');
+            return;
+        }
+        setEditNameLoading(true);
+        try {
+            const res = await api.updateProfileName(trimmed);
+            if (res?.token) localStorage.setItem('ignite_admin_token', res.token);
+            if (res?.user) localStorage.setItem('ignite_user', JSON.stringify(res.user));
+            setUserName(res?.user?.name || trimmed);
+            setEditNameSuccess(true);
+            setTimeout(() => {
+                setEditNameSuccess(false);
+                setShowEditName(false);
+            }, 1200);
+        } catch (err: any) {
+            setEditNameError(err?.message || 'Failed to update profile name.');
+        } finally {
+            setEditNameLoading(false);
         }
     };
 
@@ -471,11 +506,18 @@ const Admin: React.FC = () => {
                 <div className="flex flex-wrap justify-between items-center gap-4 mb-8">
                     <div>
                         <span className="text-[10px] font-mono-code text-primary uppercase tracking-widest block mb-1">
-                            // COMMAND CONSOLE · {userRole.toUpperCase()} {userEmail ? `(${userEmail})` : ''}
+                            // COMMAND CONSOLE · {userRole.toUpperCase()}{userName ? ` · ${userName}` : ''}{userEmail ? ` (${userEmail})` : ''}
                         </span>
                         <h1 className="text-3xl font-display font-bold text-white">Admin Dashboard</h1>
                     </div>
-                    <div className="flex items-center gap-2">
+                    <div className="flex flex-wrap items-center gap-2">
+                        <button
+                            type="button"
+                            onClick={() => { setEditNameValue(userName); setShowEditName(true); setEditNameError(''); setEditNameSuccess(false); }}
+                            className="flex items-center gap-2 text-xs font-mono-code px-3.5 py-2 rounded-xl border border-white/10 text-gray-300 hover:text-white hover:bg-white/5 transition-colors"
+                        >
+                            <Pencil className="w-3.5 h-3.5 text-primary" /> Edit Name
+                        </button>
                         <button
                             type="button"
                             onClick={() => { setShowChangePass(true); setCpError(''); setCpSuccess(false); }}
@@ -529,6 +571,72 @@ const Admin: React.FC = () => {
                     </motion.div>
                 </AnimatePresence>
             </div>
+
+            {/* Edit Profile Name Modal */}
+            <AnimatePresence>
+                {showEditName && (
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1, transition: { duration: 0.2 } }}
+                        exit={{ opacity: 0, transition: { duration: 0.16 } }}
+                        className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md"
+                    >
+                        <motion.div
+                            initial={{ scale: 0.95, opacity: 0 }}
+                            animate={{ scale: 1, opacity: 1, transition: { duration: 0.2, ease: [0.16, 1, 0.3, 1] } }}
+                            exit={{ scale: 0.95, opacity: 0, transition: { duration: 0.15 } }}
+                            className="glass-card bg-[#0e1319]/95 border-t-[1.5px] border-t-white/40 rounded-2xl p-6 md:p-8 max-w-md w-full relative shadow-2xl"
+                        >
+                            <button
+                                type="button"
+                                onClick={() => setShowEditName(false)}
+                                className="absolute top-3 right-3 text-gray-400 hover:text-white p-2 rounded-lg hover:bg-white/10"
+                                aria-label="Close modal"
+                            >
+                                <X className="w-5 h-5" />
+                            </button>
+
+                            <h3 className="text-xl font-display font-bold text-white mb-1">Edit Profile Name</h3>
+                            <p className="text-xs font-mono-code text-gray-400 mb-5">
+                                Updates your display name directly in PostgreSQL.
+                            </p>
+
+                            {editNameSuccess ? (
+                                <div className="py-8 text-center space-y-3">
+                                    <div className="w-14 h-14 bg-cyber-green/10 border border-cyber-green/30 rounded-full flex items-center justify-center mx-auto animate-success-pulse">
+                                        <CheckCircle2 className="w-7 h-7 text-cyber-green" />
+                                    </div>
+                                    <p className="text-sm font-mono-code text-cyber-green font-bold">Profile name updated!</p>
+                                </div>
+                            ) : (
+                                <form onSubmit={handleEditName} className="space-y-4">
+                                    <div>
+                                        <label className="text-xs font-mono-code text-gray-400 block mb-1">Display Name *</label>
+                                        <input
+                                            type="text"
+                                            required
+                                            minLength={2}
+                                            maxLength={100}
+                                            value={editNameValue}
+                                            onChange={e => setEditNameValue(e.target.value)}
+                                            placeholder="Enter your name"
+                                            className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm outline-none focus:border-primary"
+                                        />
+                                    </div>
+                                    {editNameError && <p className="text-xs font-mono-code text-red-400">{editNameError}</p>}
+                                    <button
+                                        type="submit"
+                                        disabled={editNameLoading}
+                                        className="w-full py-3 bg-primary hover:bg-orange-600 text-black font-bold rounded-xl text-sm transition-colors disabled:opacity-50"
+                                    >
+                                        {editNameLoading ? 'Saving...' : 'Save Name'}
+                                    </button>
+                                </form>
+                            )}
+                        </motion.div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
 
             {/* Change Password Modal (Direct DB update, no email) */}
             <AnimatePresence>

@@ -4,12 +4,16 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { api } from '@/lib/api';
 import { useNavigate } from '@/lib/navigation';
-import { User, ClipboardList, BookOpen, UserCheck, LogOut, ShieldCheck, GraduationCap, Calendar, Mail, Phone, Book, Terminal } from 'lucide-react';
+import { User, ClipboardList, BookOpen, UserCheck, LogOut, ShieldCheck, GraduationCap, Calendar, Mail, Phone, Book, Terminal, Pencil, Check, X } from 'lucide-react';
 
 const Profile: React.FC = () => {
     const [user, setUser] = useState<any>(null);
     const [data, setData] = useState<any>(null);
     const [loading, setLoading] = useState(true);
+    const [editingName, setEditingName] = useState(false);
+    const [nameDraft, setNameDraft] = useState('');
+    const [savingName, setSavingName] = useState(false);
+    const [nameError, setNameError] = useState('');
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -42,6 +46,29 @@ const Profile: React.FC = () => {
         navigate('/login');
     };
 
+    const handleSaveName = async (e: React.FormEvent) => {
+        e.preventDefault();
+        setNameError('');
+        const trimmed = nameDraft.trim();
+        if (trimmed.length < 2) {
+            setNameError('Name must be at least 2 characters.');
+            return;
+        }
+        setSavingName(true);
+        try {
+            const res = await api.updateProfileName(trimmed);
+            if (res?.token) localStorage.setItem('ignite_admin_token', res.token);
+            const nextUser = res?.user || { ...user, name: trimmed };
+            localStorage.setItem('ignite_user', JSON.stringify(nextUser));
+            setUser(nextUser);
+            setEditingName(false);
+        } catch (err: any) {
+            setNameError(err?.message || 'Failed to update name.');
+        } finally {
+            setSavingName(false);
+        }
+    };
+
     if (loading) {
         return (
             <div className="min-h-screen flex items-center justify-center">
@@ -72,9 +99,52 @@ const Profile: React.FC = () => {
 
                             <div className="flex-1 text-center md:text-left">
                                 <div className="flex flex-wrap items-center justify-center md:justify-start gap-3 mb-3">
-                                    <h1 className="text-3xl md:text-4xl font-display font-extrabold text-white tracking-tight">
-                                        {user?.name}
-                                    </h1>
+                                    {editingName ? (
+                                        <form onSubmit={handleSaveName} className="flex flex-wrap items-center gap-2">
+                                            <input
+                                                type="text"
+                                                value={nameDraft}
+                                                onChange={(e) => setNameDraft(e.target.value)}
+                                                minLength={2}
+                                                maxLength={100}
+                                                required
+                                                autoFocus
+                                                className="bg-white/5 border border-white/15 focus:border-primary rounded-xl px-3 py-1.5 text-lg font-display font-bold text-white outline-none"
+                                            />
+                                            <button
+                                                type="submit"
+                                                disabled={savingName}
+                                                className="p-2 rounded-lg bg-primary text-black hover:bg-orange-600 transition-colors disabled:opacity-50"
+                                                aria-label="Save name"
+                                            >
+                                                <Check className="w-4 h-4" />
+                                            </button>
+                                            <button
+                                                type="button"
+                                                onClick={() => { setEditingName(false); setNameError(''); }}
+                                                className="p-2 rounded-lg bg-white/5 text-gray-400 hover:text-white border border-white/10"
+                                                aria-label="Cancel"
+                                            >
+                                                <X className="w-4 h-4" />
+                                            </button>
+                                            {nameError && <span className="w-full text-xs font-mono-code text-red-400">{nameError}</span>}
+                                        </form>
+                                    ) : (
+                                        <>
+                                            <h1 className="text-3xl md:text-4xl font-display font-extrabold text-white tracking-tight">
+                                                {user?.name}
+                                            </h1>
+                                            <button
+                                                type="button"
+                                                onClick={() => { setNameDraft(user?.name || ''); setNameError(''); setEditingName(true); }}
+                                                className="p-1.5 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 text-gray-400 hover:text-primary transition-colors"
+                                                title="Edit display name"
+                                                aria-label="Edit display name"
+                                            >
+                                                <Pencil className="w-3.5 h-3.5" />
+                                            </button>
+                                        </>
+                                    )}
                                     <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-cyber-green/10 border border-cyber-green/30 rounded-full text-xs font-mono-code text-cyber-green">
                                         <ShieldCheck className="w-3.5 h-3.5" />
                                         <span>VERIFIED OPERATOR</span>

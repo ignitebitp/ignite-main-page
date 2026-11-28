@@ -275,6 +275,42 @@ router.post('/setup-password', async (req, res) => {
   }
 });
 
+// PATCH /api/auth/profile — authenticated user updates their display name in DB
+router.patch('/profile', auth, async (req, res) => {
+  try {
+    const cleanName = typeof req.body?.name === 'string' ? req.body.name.trim() : '';
+    if (cleanName.length < 2 || cleanName.length > 100) {
+      return res.status(400).json({ error: 'Name must be between 2 and 100 characters' });
+    }
+
+    const updated = await prisma.user.update({
+      where: { id: req.user.id },
+      data: { name: cleanName },
+    });
+
+    const userRole = ['owner', 'admin', 'moderator'].includes(updated.role) ? updated.role : 'moderator';
+    const token = jwt.sign(
+      { id: updated.id, role: userRole, email: updated.email, name: updated.name },
+      JWT_SECRET,
+      { expiresIn: '7d' }
+    );
+
+    return res.json({
+      token,
+      user: {
+        id: updated.id,
+        _id: updated.id,
+        name: updated.name,
+        email: updated.email,
+        role: userRole,
+        isVerified: updated.isVerified,
+      },
+    });
+  } catch (err) {
+    return res.status(500).json({ error: err.message });
+  }
+});
+
 // GET /api/auth/verify — verify JWT
 router.get('/verify', auth, (req, res) => {
   res.json({ valid: true, user: req.user, role: req.user.role });

@@ -57,6 +57,8 @@ export const api = {
     },
     setupPassword: (data: { token?: string; email?: string; password: string; name?: string }) =>
         api.request('/api/auth/setup-password', { method: 'POST', body: JSON.stringify(data) }),
+    updateProfileName: (name: string) =>
+        api.request('/api/auth/profile', { method: 'PATCH', body: JSON.stringify({ name }) }),
     verifyToken: () => api.request('/api/auth/verify'),
 
     // Recruitment
